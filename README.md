@@ -1,3 +1,10 @@
 #安装
-- [node.js安装](https://blog.csdn.net/weixin_43891485/article/details/117635376)
-- [node.js安装](https://blog.csdn.net/weixin_43891485/article/details/117635376)
+- [新系统从零开始配置](pcreset.md)
+- [node.js安装](nodejs.md)
+
+---
+toc:
+  depth_from: 1
+  depth_to: 6
+  ordered: false
+---
