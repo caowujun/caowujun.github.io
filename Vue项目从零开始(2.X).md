@@ -8,7 +8,7 @@
 > ②~~原先vue-cli安装方式废除，此文按照最新的@vue/cli配置~~
 
 我的版本如下：
- ![install vue](https://raw.githubusercontent.com/P0164442/md/main/images/vue/1.png)
+ ![install vue](images/vue/1.png)
 ##**1、安装vue**     
 **1.打开cmd命令窗口**
 **2.执行命令**
@@ -22,7 +22,7 @@ cnpm install webpack –g
 cnpm install webpack-cli –g
 ```
 **3.测试如下**
- ![install vue](https://raw.githubusercontent.com/P0164442/md/main/images/vue/2.png)
+ ![install vue](images/vue/2.png)
 
 ##**2、创建vue** 
 ###**1.cmd窗口创建**
@@ -41,7 +41,7 @@ vue create xxx
 vue ui
 ```
 默认打开网页
- ![install vue](https://raw.githubusercontent.com/P0164442/md/main/images/vue/3.png)
+ ![install vue](images/vue/3.png)
 点击创建来创建新项目
 
 ###**3.术语介绍**
@@ -76,7 +76,7 @@ npm run build
 ```
 
 ###**第二种：UI 运行**
- ![install vue](https://raw.githubusercontent.com/P0164442/md/main/images/vue/4.png)
+ ![install vue](images/vue/4.png)
 
 
 # **3、深入**
@@ -88,7 +88,7 @@ npm run build
 vue add element
 ```
 或者从UI
- ![install vue](https://raw.githubusercontent.com/P0164442/md/main/images/vue/5.png)
+ ![install vue](images/vue/5.png)
 
  如果搜索不到插件可以采用原来的方法增加（像vuex，router，element通过add插件方式添加就不需要执行了）
 ```bash
