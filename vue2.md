@@ -77,7 +77,7 @@ npm run build
  ![install vue](images/vue/4.png)
 
 
-## 4. 深入
+## 5. 深入
 新版本的脚手架提供了插件功能,像router，store，如果采用add 插件方式则会在项目自动生成store文件夹及index.js，如果采用npm则不会，所以建议这几个采用add方式。
 
 
