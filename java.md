@@ -1,4 +1,8 @@
-###1、druid
+# java学习
+_made by caowujun,2022.1.19_
+
+---
+## 1. druid数据库加密
 springboot下,pom文件
 ```xml
 <dependency>
@@ -29,4 +33,6 @@ spring:
 ```
 
 密钥生成命令，跳转到druid的jar包下面，打开cmd
+```bash
  java -cp druid-1.2.4.jar com.alibaba.druid.filter.config.ConfigTools Win2021@ >miyao.txt 
+```
