@@ -61,8 +61,9 @@ Babel：ES6 转 ES5
 
 ​E2E Testing：E2E测试
 ```
-##**3、运行vue**   
-###**第一种：cmd 运行**
+## 4. 运行vue
+
+## 方法1：cmd 运行 
 测试
 ```bash
 npm run serve
@@ -72,7 +73,7 @@ npm run serve
 npm run build
 ```
 
-###**第二种：UI 运行**
+## 方法2：UI 运行
  ![install vue](images/vue/4.png)
 
 
