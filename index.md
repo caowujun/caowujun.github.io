@@ -6,7 +6,7 @@
 
 - [flutter安装](flutter.md)
 
-- [redmine安装含mysql](redmine-mysql.md)
+- [redmine安装含mysql](redmine-mysql.html)
 
 # 笔记
 - [dart](dart.md)
@@ -26,3 +26,4 @@
 ---
 his is end!
 ===
+ 

@@ -1,5 +1,4 @@
-@import "js/mdCreateMenu.js"
-
+ 
 # 完整版redmine图文安装含mysql
 _made by caowujun,2022.01.11_
 
