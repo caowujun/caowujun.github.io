@@ -53,8 +53,11 @@ npm config set cache "E:\nodejs\node_cache"
 #### 4.3.2 修改用户变量PATH，将C:\Users\用户名\AppData\Roaming\npm的值改为E:\nodejs\node_global
 
 修改前
+
  ![install node.js](images/nodejs/16.png)
+
 修改后
+
  ![install node.js](images/nodejs/17.png)
 
 ### 4.4 复制一下代码在命令窗口执行，切换到国内淘宝镜像
@@ -68,6 +71,4 @@ npm install -g cnpm --registry=https://registry.npm.taobao.org
  ![install node.js](images/nodejs/12.png)
 
  
----
-his is end!
-===
+ 

@@ -280,10 +280,7 @@ docker start redmine
 http://192.168.109.128:3000
 
  
----
-his is end!
-===
-
+ 
 
 
  
