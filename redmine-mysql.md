@@ -224,17 +224,23 @@ mkdir -p /var/log/redmine
 然后执行run命令，注意最后一行sameersbn/redmine前是有一个空格的，不能和前面的log路径连起来
 ```bash
 docker run --name=redmine -it \
-  --restart always\
+  --restart always \
   --publish=3000:80 \
   --env='DB_ADAPTER=mysql2' \
-  --env='DB_HOST=192.168.109.128' --env='DB_NAME=redmine' \
-  --env='DB_USER=redmine' --env='DB_PASS=Win2003@' \
-  --env='SMTP_DOMAIN=www.163.com'  --env='SMTP_HOST=smtp.163.com'  --env='SMTP_PORT=25' --env='SMTP_USER=redminesmtp@163.com' --env='SMTP_PASS=NZHOSHWRKWQZTXMG'  \
+  --env='DB_HOST=192.168.109.128' \
+  --env='DB_NAME=redmine' \
+  --env='DB_USER=redmine' \
+  --env='DB_PASS=mima1' \
+  --env='SMTP_DOMAIN=www.163.com'  \
+  --env='SMTP_HOST=smtp.163.com'  \
+  --env='SMTP_PORT=25' \
+  --env='SMTP_USER=redminesmtp@163.com' \
+  --env='SMTP_PASS=key1'  \
   --volume=/srv/docker/redmine/redmine:/home/redmine/data \
   --volume=/srv/docker/redmine/redmine-logs:/var/log/redmine/ \
   sameersbn/redmine
 ```
-
+<!-- Win2003@,NZHOSHWRKWQZTXMG -->
 ## 3.5 几种常用命令
 
 查询所有容器
