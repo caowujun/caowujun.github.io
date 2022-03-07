@@ -172,7 +172,7 @@ exit;
 
 如果之前给root账号密码给别人了，现在不想给了，在这里修改root密码
 ```bash
-update mysql.user set authentication_string=password('Win2004@') where user='root';
+update mysql.user set authentication_string=password('xinmima') where user='root';
 flush privileges;
 exit;
 ```
