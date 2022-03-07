@@ -188,8 +188,8 @@ mysql -uroot -p
 然后分别执行（创建redmine数据库）
 ```bash 
 CREATE DATABASE IF NOT EXISTS `redmine` DEFAULT CHARACTER SET `utf8` COLLATE `utf8_unicode_ci`; 
-GRANT ALL ON redmine.* TO 'redmine'@'localhost' IDENTIFIED BY 'Win2003@';
-GRANT ALL ON *.* TO redmine@'%' IDENTIFIED BY 'Win2003@' WITH GRANT OPTION;
+GRANT ALL ON redmine.* TO 'redmine'@'localhost' IDENTIFIED BY 'woshimima';
+GRANT ALL ON *.* TO redmine@'%' IDENTIFIED BY 'woshimima' WITH GRANT OPTION;
 flush privileges;
 exit;
 ```
