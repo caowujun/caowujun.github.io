@@ -7,12 +7,8 @@ orcl的管理密码用orcl，然后就口令管理的system，sys的密码都用
 
 **注意的是：经过测试，发现只要装了服务端，就可以连本地orcl库和服务器的库，不需要装client端，plsql可以访问。** 
 
-#JDK1.8安装
-测试：      
-```bash
-java –version          
-javac –version
-```
+## 2. JDK1.8安装
+
  
 环境变量修正增加JAVA_HOME  
 ``` 
@@ -24,9 +20,13 @@ path新增，注意Windows10应该是分2行增加，而不是这2个写在一�
 %JAVA_HOME%\bin   
 %JAVA_HOME%\jre\bin
 ```
+测试：      
+```bash
+java –version          
+javac –version
+```
 
-
-## 2. MVN安装
+## 3. MVN安装
 测试:
 ```bash
  mvn –version   
