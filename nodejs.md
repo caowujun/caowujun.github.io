@@ -71,4 +71,8 @@ npm install -g cnpm --registry=https://registry.npm.taobao.org
  ![install node.js](images/nodejs/12.png)
 
  
- 
+ npm升级
+
+ ```bash
+ npm install -g npm
+ ```
