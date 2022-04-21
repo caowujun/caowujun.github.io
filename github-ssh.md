@@ -100,7 +100,7 @@ ssh-add ~/.ssh/id_rsa_tow
 ```
 
 ## 6. git仓库初始化 
-
+如果项目没有经过初始化，就是指的没有.git文件夹。
 create a new repository on the command line 
 ```bash
 git init
@@ -111,6 +111,8 @@ git remote add origin git@github.com:caowujun/vue3.git
 git push -u origin main
 ```
 
+
+比如我用create-react-app 或者 vue create ,创建好的项目本身已经git init了，就用下面的。
 push an existing repository from the command line
 
 ```bash
