@@ -21,7 +21,7 @@ _made by caowujun,2020.11.11_
 
 ## 3. 测试
     打开命令窗口，输入node -v,npm -v ,如图
- ![install node.js](images/nodejs/10.png)
+ ![install node.js](images/nodejs/10-1.png)
 
 
 ## 4.进阶
@@ -40,7 +40,7 @@ npm config set prefix "E:\nodejs\node_global"
 npm config set cache "E:\nodejs\node_cache"
 ```
 
- ![install node.js](images/nodejs/13.png)
+ ![install node.js](images/nodejs/13-1.png)
     
 ### 4.3 打开环境变量配置窗口
 
@@ -66,9 +66,9 @@ npm config set cache "E:\nodejs\node_cache"
 npm install -g cnpm --registry=https://registry.npm.taobao.org
 ```
 
- ![install node.js](images/nodejs/11.png)
+ ![install node.js](images/nodejs/11-1.png)
 安装后如图所示
- ![install node.js](images/nodejs/12.png)
+ ![install node.js](images/nodejs/12-1.png)
 
  
  npm升级
