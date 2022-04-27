@@ -12,9 +12,13 @@ _made by caowujun,2022.1.19_
 
 - [flutter 安装](flutter.md)
 
-- [redmine 安装含 mysql](redmine-mysql.html)
+- [redmine 安装含 mysql](redmine-mysql.md)
+
+- [createreact&yarn](react-yarn.md)
 
 # 笔记
+
+<!-- - [ES6](es6.md) -->
 
 - [dart 学习](dart.md)
 
@@ -29,6 +33,10 @@ _made by caowujun,2022.1.19_
 - [vue2.x 从零开始](vue2.md)
 
 - [vue3.x 从零开始](vue3.md)
+
+- [react 从零开始](react.md)
+
+- [react umi](umi.md)
 
 # 相关 url（转）
 

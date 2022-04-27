@@ -3,6 +3,10 @@
 _made by caowujun,2022.04.19_
 
 [https://create-react-app.dev/docs/getting-started](https://create-react-app.dev/docs/getting-started)
+[https://github.com/remix-run/react-router/blob/main/docs/getting-started/tutorial.md](https://github.com/remix-run/react-router/blob/main/docs/getting-started/tutorial.md)
+[http://react-guide.github.io/react-router-cn/docs/guides/basics/RouteConfiguration.html](http://react-guide.github.io/react-router-cn/docs/guides/basics/RouteConfiguration.html)
+[（route）https://blog.csdn.net/weixin_51666715/article/details/124077673](https://blog.csdn.net/weixin_51666715/article/details/124077673)
+[（route）https://zhuanlan.zhihu.com/p/431389907](https://zhuanlan.zhihu.com/p/431389907)
 
 ---
 
@@ -272,9 +276,15 @@ handleSomething() {
 }
 ```
 
-## 10. Route，整页面跳转
+## 10. Route
 
-要跳转的文件
+- redirect,访问/main 的时候跳转到/event
+
+```typescript
+<Route path='/main' element={<Redirect to='/event' />} />
+```
+
+- 整页面跳转
 
 ```typescript
 export default function Login() {
@@ -294,4 +304,114 @@ function DD() {
   <Route path='/' element={<DD />} />
   <Route path='/login' element={<Welcome />} />
 </Routes>;
+```
+
+- 局部跳转
+
+index.tsx
+
+```typescript
+const root = ReactDOM.createRoot(
+  document.getElementById('root') as HTMLElement
+);
+root.render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
+);
+```
+
+app.tsx
+
+```typescript
+function App() {
+  return (
+    <Routes>
+      <Route path='/' element={<Login />} />
+      <Route path='/main' element={<Main />}>
+        <Route path='about' element={<About />} />
+        <Route path='fire' element={<Fire />} />
+        <Route path='dashboard' element={<DashBoard />} />
+      </Route>
+    </Routes>
+  );
+}
+```
+
+注意：如果想默认加载 Dashboard,需要这样设置
+
+```typescript
+/* <Route path="dashboard" element={<DashBoard />} /> */
+<Route index element={<DashBoard />} />
+```
+
+main.tsx
+
+```typescript
+export default function Main(props: any) {
+  return (
+    <div className={style.box}>
+      <Head />
+      <div className={style.content}>
+        <div className={style.left}>
+          <LeftMenu />
+        </div>
+        <div className={style.right}>
+          <Outlet />
+        </div>
+      </div>
+      <Footer />
+    </div>
+  );
+}
+```
+
+注意\<Outlet />标签，main 下面的子路由都会加载到这里。
+
+head.tsx
+
+```typescript
+export default function Head(props: any) {
+  const navigate = useNavigate();
+  return (
+    <div className={style.head}>
+      <Button onClick={() => navigate('/main/about')}>about</Button>
+      <hr />
+    </div>
+  );
+}
+```
+
+leftmenu.tsx
+
+```typescriptexport default function LeftMenu(props: any) {
+    return (
+        <div>
+            <ul>
+                <li>
+                    <Link to="/main/dashboard">dashboard</Link>
+                </li>
+                <li>
+                    <Link to="/main/fire">fire</Link>
+                </li>
+            </ul>
+            <hr />
+        </div>
+    );
+}
+```
+
+**可以看到，当使用 button 的时候，要事件跳转，用 Link 则不需要。**
+
+_\<NavLink>与\<Link>组件类似，且可实现导航的“高亮”效果。当当前路由匹配的时候可以设置 active_
+
+```text
+useRoutes():作用：根据路由表，动态创建<Routes>和<Route>。
+useNavigate():作用：返回一个函数用来实现编程式导航。
+useParams():作用：回当前匹配路由的params参数，类似于5.x中的match.params。
+useSearchParams():作用：用于读取和修改当前位置的 URL 中的查询字符串。
+useLocation():作用：获取当前 location 信息，对标5.x中的路由组件的location属性。
+useMatch():作用：返回当前匹配信息，对标5.x中的路由组件的match属性。
 ```
