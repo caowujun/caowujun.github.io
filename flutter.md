@@ -26,7 +26,7 @@ _假定我们已经安装了 java1.8，并且设置了环境变量。_
 ![jsva环境变量](/images/flutter/5.png)
 
 然后我们设置安卓的环境变量：
-![安卓环境变量](/images/flutter/6.png)
+![安卓环境变量](/images/flutter/6-1.png)
 ![安卓环境变量](/images/flutter/7.png)
 
 测试结果如下：
@@ -112,7 +112,7 @@ maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
 
 ### 2.6 模拟器换路径
 
-模拟器路径很大，默认在 C:\Users\P0164442\.android\avd 下面
+模拟器路径很大，默认在 C:\Users\user\.android\avd 下面
 可以直接把模拟器挪走到 E 盘
 ![环境变量测试](/images/flutter/23.png)
 然后改下配置文件的路径
