@@ -51,7 +51,7 @@ npm config set cache "E:\nodejs\node_cache"
 
 #### 4.3.1 增加系统变量 NODE_PATH，值 E:\nodejs\node_global\node_modules
 
-![install node.js](images/nodejs/15-1.png)
+![install node.js](images/nodejs/15.png)
 
 #### 4.3.2 修改用户变量 PATH，将 C:\Users\用户名\AppData\Roaming\npm 的值改为 E:\nodejs\node_global
 
