@@ -1,9 +1,13 @@
-# java学习
+# java 学习
+
 _made by caowujun,2022.1.19_
 
 ---
-## 1. druid数据库加密
-springboot下,pom文件
+
+## 1. druid 数据库加密
+
+springboot 下,pom 文件
+
 ```xml
 <dependency>
         <groupId>com.alibaba</groupId>
@@ -11,7 +15,9 @@ springboot下,pom文件
         <version>1.2.4</version>
 </dependency>
 ```
+
 yml
+
 ```yml
 spring:
   application:
@@ -28,11 +34,11 @@ spring:
       filter:
         config:
           enabled: true
-      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIkR+Y73QCtq2P8jlpxUWbYiAdowGPgkABXfLO79Bwc0Babv2urmjbFGMoDZKfTR5QlS19ZUcDFu1YoJ0o533mMCAwEAAQ==        
-
+      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIkR+Y73QCtq2P8jlpxUWbYiAdowGPgkABXfLO79Bwc0Babv2urmjbFGMoDZKfTR5QlS19ZUcDFu1YoJ0o533mMCAwEAAQ==
 ```
 
-密钥生成命令，跳转到druid的jar包下面，打开cmd
+密钥生成命令，跳转到 druid 的 jar 包下面，打开 cmd
+
 ```bash
- java -cp druid-1.2.4.jar com.alibaba.druid.filter.config.ConfigTools Win2021@ >miyao.txt 
+ java -cp druid-1.2.4.jar com.alibaba.druid.filter.config.ConfigTools Win2021@ >miyao.txt
 ```

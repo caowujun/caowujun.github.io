@@ -1,13 +1,17 @@
-# springboot学习
+# springboot 学习
+
 _made by caowujun,2022.3.19_
 
----  
-## 1. Springboot项目创建
+---
+
+## 1. Springboot 项目创建
+
 按图示依次创建
 ![新建springboot](/images/springboot/1.png)
 ![新建springboot](/images/springboot/2.png)
 ![新建springboot](/images/springboot/3.png)
-pom文件增加几个依赖
+pom 文件增加几个依赖
+
 ```xml
 <!-- mybatisplus -->
         <dependency>
@@ -29,7 +33,8 @@ pom文件增加几个依赖
         </dependency>
 ```
 
-增加swagger config
+增加 swagger config
+
 ```java
 
 @Configuration
@@ -77,8 +82,11 @@ public class Swagger3Config implements WebMvcConfigurer {
     }
 }
 ```
-###问题1
+
+###问题 1
+
 ```json
 Failed to start bean 'documentationPluginsBootstrapper'; nested exception is
 ```
-解决：在swaggerConfig类上加@EnableWebMvc.上面代码上已经修正果的。
+
+解决：在 swaggerConfig 类上加@EnableWebMvc.上面代码上已经修正果的。
