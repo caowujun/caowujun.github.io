@@ -295,3 +295,36 @@ expect(mockFunc.getMockName()).toBe('a mock name');
 链接：https://www.jianshu.com/p/ad87eaf54622
 来源：简书
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+## 8. Snapshot 快照测试
+
+Snapshot 快照的作用就是：把每次修改后的代码形成快照，与上次代码生成的快照做对比，若有修改部分，则会出现异常快照提示。
+
+## 9. jest.fn()
+
+Jest.fn()是创建 Mock 函数最简单的方式，如果没有定义函数内部的实现，jest.fn()会返回 undefined 作为返回值。
+Jest.fn()所创建的 Mock 函数还可以设置返回值，定义内部实现或返回 Promise 对象。
+
+## 10. jest.mock()
+
+- jest.mock('./utils.ts') 自动返回一个 mock ，可以使用它来监视对类构造函数及其所有方法的调用。
+- 在需要 mock 的模块目录临近建立目录**mocks**
+
+## 11. jest.spyOn()
+
+Jest.spyOn()方法同样创建一个 mock 函数，但是该 mock 函数不仅能够捕获函数的调用情况，还可以正常的执行被 spy 的函数。实际上，jest.spyOn()是 jest.fn()的语法糖，它创建了一个和被 spy 的函数具有相同内部代码的 mock 函数。
+
+```tsx
+import m from './mock';
+import utils from './utils';
+test('mock 整个 fetch.js 模块', () => {
+  const y = jest.spyOn(utils, 'add');
+  m.test();
+  expect(y).toBeCalledTimes(1);
+});
+```
+
+## 12. Mock 和 Spy 的区别
+
+- when(...) thenReturn(...)做了真实调用。只是返回了指定的结果
+- doReturn(...) when(...)不做真实调用

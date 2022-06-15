@@ -44,6 +44,20 @@ sass
 npm install sass
 ```
 
+- any:任意赋值
+- unknown：严谨，必须先判断类型
+  let da:unknown=1
+  da='fff';
+  if(typeof da === 'string')
+  {
+  da.toString();
+  }
+- never,抛异常用
+  function gets():never
+  {
+  throw new Error('')
+  }
+
 ## 2.prettierrc 介绍及文件常见配置
 
 步骤如下：
@@ -276,6 +290,27 @@ handleSomething() {
 }
 ```
 
+举一个例子
+
+```typescript
+const handleReset = () => {
+  console.log(groupId, groupName);
+  setGroupId('');
+  setGroupName('');
+  console.log(groupId, groupName);
+  filterData(groupId, groupName);
+};
+```
+
+最后结果是
+
+```log
+handleSearch
+TableHeader.tsx:25 aa
+TableHeader.tsx:28 aa
+index.tsx:65 handleSearch
+```
+
 ## 10. Route
 
 - redirect,访问/main 的时候跳转到/event
@@ -415,3 +450,1003 @@ useSearchParams():作用：用于读取和修改当前位置的 URL 中的查询
 useLocation():作用：获取当前 location 信息，对标5.x中的路由组件的location属性。
 useMatch():作用：返回当前匹配信息，对标5.x中的路由组件的match属性。
 ```
+
+## 11. React.memo() 是什么？
+
+组件仅在它的 props 发生改变的时候进行重新渲染。通常来说，在组件树中 React 组件，只要有变化就会走一遍渲染流程。但是通过 PureComponent 和 React.memo()，我们可以仅仅让某些组件进行渲染。
+[https://www.cnblogs.com/zhangguicheng/articles/12897605.html](https://www.cnblogs.com/zhangguicheng/articles/12897605.html)
+
+## 12. React 中样式的 3 种方式
+
+### 12.1 style
+
+<details>
+<summary>style文件</summary>
+
+```typescript
+//首先是样式文件 style.ts
+const useStyles = {
+  paper: {
+    width: '400px',
+    border: '1px solid #E7EBF0',
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%,-50%)',
+    textAlign: 'center',
+    verticalAlign: 'center',
+    padding: '40px 48px',
+    borderRadius: '5px',
+  } as React.CSSProperties,
+  title: {
+    fontWeight: '800',
+  },
+  divider: {
+    marginBottom: '10px',
+  },
+  grid: { marginTop: '10px' },
+  label: {
+    textAlign: 'left',
+  } as React.CSSProperties,
+
+  textfield: {},
+  button: { marginTop: '25px', borderRadius: '5px' },
+};
+export default useStyles;
+```
+
+</details>
+
+在页面文件中
+
+<details>
+<summary>页面文件</summary>
+
+```typescript
+import { Button, Divider, TextField, Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import { useNavigate } from 'react-router-dom';
+import useStyles from './style';
+
+export default function Login() {
+  const navigate = useNavigate();
+
+  return (
+    <>
+      <Paper variant='outlined' style={useStyles.paper}>
+        <Typography
+          variant='caption'
+          display='block'
+          style={useStyles.title}
+          gutterBottom
+        >
+          Login Page
+        </Typography>
+        <Divider style={useStyles.divider} />
+        <Grid container direction='column' justifyContent='center'>
+          <Grid item style={useStyles.grid}>
+            <Typography display='block' gutterBottom style={useStyles.label}>
+              email:
+            </Typography>
+            <TextField
+              variant='outlined'
+              id='username'
+              placeholder='user name'
+              size='small'
+              fullWidth
+              style={useStyles.textfield}
+            />
+          </Grid>
+          <Grid item style={useStyles.grid}>
+            <Typography display='block' gutterBottom style={useStyles.label}>
+              password:
+            </Typography>
+            <TextField
+              type='password'
+              variant='outlined'
+              id='userpwd'
+              placeholder='user pwd'
+              size='small'
+              fullWidth
+              style={useStyles.textfield}
+            />
+          </Grid>
+          <Button
+            variant='contained'
+            color='primary'
+            fullWidth
+            style={useStyles.button}
+            onClick={() => navigate('/home')}
+          >
+            login
+          </Button>
+        </Grid>
+      </Paper>
+    </>
+  );
+}
+```
+
+</details>
+
+### 12.2 通过 class 来控制
+
+<details>
+<summary>makeStyles 文件</summary>
+
+```typescript
+//style.ts文件
+import { red } from '@material-ui/core/colors';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+  topGrid: {
+    height: '110px',
+    backgroundColor: '#fff',
+  },
+  input: { width: '173px', height: '30px' },
+  inputTxt: { paddingRight: '20px' },
+  searchBox: {
+    display: 'flex',
+    alignItems: 'center',
+    paddingLeft: '20px',
+  },
+  buttonGroup: {
+    display: 'flex',
+    alignItems: 'center',
+    paddingRight: '20px',
+  },
+  serachButton: {
+    backgroundColor: '#744DFE',
+    marginRight: '10px',
+    color: '#fff',
+  },
+  resetButton: {
+    color: '#656D92',
+    marginRight: '20px',
+  },
+  addButton: {
+    color: '#1AD188',
+  },
+  deleteButton: {
+    color: '#DF1847',
+  },
+  tableHeader: {
+    backgroundColor: '#F4F4F6',
+    height: '30px',
+    padding: '-16px',
+  },
+  tableBody: {
+    // backgroundColor: '#F4F4F6',
+    height: '30px',
+    padding: '-16px',
+  },
+  checkColumn: {
+    paddingBottom: '0px',
+    paddingTop: '0px',
+    width: '100px',
+  },
+  link: { textDecoration: 'none', color: '#744DFE' },
+  formrow: {
+    padding: '10px',
+    marginLeft: '30px',
+    display: 'flex',
+    alignItems: 'center',
+  },
+}));
+export default useStyles;
+```
+
+</details>
+
+在 tsx 文件
+
+<details>
+<summary>在 tsx 文件</summary>
+
+```typescript
+import {
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Button,
+  Checkbox,
+  Grid,
+  Typography,
+  InputBase,
+  TextField,
+  Divider,
+  Box,
+  TableFooter,
+  TablePagination,
+  Select,
+  MenuItem,
+  Modal,
+  Fade,
+  Backdrop,
+  Dialog,
+  DialogTitle,
+  DialogContentText,
+  DialogActions,
+  DialogContent,
+} from '@material-ui/core';
+import { Link as RouteLink } from 'react-router-dom';
+import Link from '@material-ui/core/Link';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
+import MuiButton from '../component/MuiButton';
+import useStyles from './style';
+import PageSelect from '../../components/PageSelect';
+import { useState } from 'react';
+import platoformDataType, {
+  bodyData,
+  platformColumns,
+} from '../../mock/platformData';
+
+export default function Platform() {
+  const classes = useStyles();
+
+  const [open, setOpen] = useState<boolean>(false);
+
+  const initialData = {
+    id: '',
+    groupId: '',
+    groupName: '',
+    note: '',
+  };
+  const [selectdRow, setSelectdRow] = useState<platoformDataType>(initialData);
+
+  const handleOpen = (id: string) => {
+    setOpen(true);
+    console.log('add');
+    setSelectdRow(bodyData.find((item) => item.id === id) ?? initialData);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  return (
+    <>
+      <TableContainer component='div'>
+        <Grid
+          container
+          direction='row'
+          justifyContent='space-between'
+          alignItems='center'
+          className={classes.topGrid}
+        >
+          <Box className={classes.searchBox}>
+            设置组 ID:
+            <TextField
+              variant='outlined'
+              size='small'
+              className={classes.inputTxt}
+            />
+            设置组名称:
+            <TextField variant='outlined' size='small' />
+          </Box>
+          <Box className={classes.buttonGroup}>
+            <Button variant='contained' className={classes.serachButton}>
+              查询
+            </Button>
+            <Button variant='outlined' className={classes.resetButton}>
+              重置
+            </Button>
+            <MuiButton
+              text='增加'
+              endIcon={<AddCircleOutlineIcon />}
+              style={classes.addButton}
+              onClick={() => handleOpen('')}
+            />
+            <MuiButton
+              text='删除'
+              endIcon={<RemoveCircleOutlineIcon />}
+              style={classes.deleteButton}
+              onClick={() => {}}
+            />
+          </Box>
+        </Grid>
+        <Divider />
+
+        <Table>
+          <TableHead>
+            <TableRow className={classes.tableHeader} component='tr'>
+              <TableCell className={classes.checkColumn}>
+                <Checkbox />
+              </TableCell>
+              {platformColumns.map((item, index) => {
+                return <TableCell key={index}>{item}</TableCell>;
+              })}
+              <TableCell style={{ width: '100px' }}>操作</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {bodyData.map((item) => {
+              return (
+                <TableRow
+                  className={classes.tableBody}
+                  component='tr'
+                  key={item.id}
+                >
+                  <TableCell className={classes.checkColumn}>
+                    <Checkbox />
+                  </TableCell>
+                  <TableCell>
+                    <Link
+                      href='#'
+                      className={classes.link}
+                      onClick={(e) => handleOpen(item.id)}
+                    >
+                      {item.groupId}
+                    </Link>
+                  </TableCell>
+                  <TableCell>{item.groupName}</TableCell>
+                  <TableCell>{item.note}</TableCell>
+                  <TableCell>
+                    <Link
+                      href='#'
+                      className={classes.link}
+                      onClick={(e) => handleOpen(item.id)}
+                    >
+                      明细
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+
+        <Grid
+          container
+          direction='row'
+          justifyContent='flex-end'
+          alignItems='center'
+        >
+          共10页
+          <PageSelect />
+        </Grid>
+      </TableContainer>
+      {/* 当 fullWidth 属性为true时，对话框将根据 maxWidth 的值进行自我调整。 */}
+      <Dialog
+        fullWidth={true}
+        maxWidth={'sm'}
+        open={open}
+        onClose={handleClose}
+        aria-labelledby='form-dialog-title'
+      >
+        {/* <DialogTitle id='form-dialog-title'>{selectdRow.groupName}</DialogTitle> */}
+        <DialogContent>
+          <DialogContentText></DialogContentText>
+          <form autoComplete='off'>
+            <div className={classes.formrow}>
+              <Typography style={{ width: '120px' }}>设置组ID：</Typography>
+              <TextField
+                required
+                autoFocus
+                variant='outlined'
+                margin='dense'
+                id='id'
+                value={selectdRow.groupId}
+                style={{ width: '173px' }}
+              />
+            </div>
+            <div className={classes.formrow}>
+              <Typography style={{ width: '120px' }}>设置组名称：</Typography>
+              <TextField
+                margin='dense'
+                id='name'
+                style={{ width: '173px' }}
+                variant='outlined'
+                value={selectdRow.groupName}
+              />
+            </div>
+            <div className={classes.formrow}>
+              <Typography
+                style={{
+                  width: '120px',
+                }}
+              >
+                说明：
+              </Typography>
+              <TextField
+                multiline
+                maxRows={4}
+                required
+                margin='dense'
+                variant='outlined'
+                id='note'
+                value={selectdRow.note}
+                style={{ width: '382px' }}
+              />
+            </div>
+          </form>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color='primary' variant='contained'>
+            提交
+          </Button>
+          <Button onClick={handleClose} variant='outlined'>
+            返回
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+}
+```
+
+</details>
+
+### 12.3 通过 css 文件来控制
+
+<details>
+<summary>css/summary>
+
+```typescript
+//style.module.css
+.paper {
+  width: 400px;
+  border: 1px solid #e7ebf0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  vertical-align: center;
+  padding: 40px 48px;
+  border-radius: 5px;
+}
+.title {
+  font-weight: 800 !important;
+  line-height: 24px;
+  font-size: 16px !important;
+}
+.divider {
+  /* margin-bottom: 10px !important; */
+  margin-top: 10px !important;
+}
+.grid {
+  margin-top: 10px !important;
+}
+.label {
+  text-align: left;
+}
+
+.button {
+  margin-top: 25px !important;
+  border-radius: 5px;
+}
+```
+
+</details>
+
+页面文件
+
+<details>
+<summary>页面文件</summary>
+
+```typescript
+import { Button, Divider, TextField, Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import { useNavigate } from 'react-router-dom';
+import styles from './style.module.css';
+
+export default function Login() {
+  const navigate = useNavigate();
+
+  return (
+    <>
+      <Paper variant='outlined' className={styles.paper}>
+        <Typography
+          variant='caption'
+          display='block'
+          className={styles.title}
+          gutterBottom
+        >
+          Login Page
+        </Typography>
+        <Divider className={styles.divider} />
+        <Grid container direction='column' justifyContent='center'>
+          <Grid item className={styles.grid}>
+            <Typography display='block' gutterBottom className={styles.label}>
+              email:
+            </Typography>
+            <TextField
+              variant='outlined'
+              id='username'
+              placeholder='user name'
+              size='small'
+              fullWidth
+              className={styles.textfield}
+            />
+          </Grid>
+          <Grid item className={styles.grid}>
+            <Typography display='block' gutterBottom className={styles.label}>
+              password:
+            </Typography>
+            <TextField
+              type='password'
+              variant='outlined'
+              id='userpwd'
+              placeholder='user pwd'
+              size='small'
+              fullWidth
+              className={styles.textfield}
+            />
+          </Grid>
+          <Button
+            variant='contained'
+            color='primary'
+            fullWidth
+            className={styles.button}
+            onClick={() => navigate('/home')}
+          >
+            login
+          </Button>
+        </Grid>
+      </Paper>
+    </>
+  );
+}
+```
+
+</details>
+
+## 13. 关于往 dialog 传 detail 数据
+
+传过去的 detailData，如果是只做 view，那么可以在代码中
+
+```typescript
+<TextField
+ required
+ autoFocus
+ variant='outlined'
+ margin='dense'
+ id='groupId'
+ value={detailData.groupId}
+ style={{ width: '173px' }}
+```
+
+但是如果是要兼容做编辑，就不行了，无法改变 textbox 的值，应该是 detailData 是非响应式的
+需要
+
+```typescript
+const [user, setUser] = useState<platoformDataType>({ ...detailData });
+```
+
+```typescript
+<TextField
+  required
+  autoFocus
+  variant='outlined'
+  margin='dense'
+  id='groupId'
+  value={user.groupId}
+  style={{ width: '173px' }}
+  onChange={(e) => valueChange('groupId', e)}
+/>
+```
+
+但是又牵扯一个问题
+user.groupId 的值居然是空的。
+<code>const [user, setUser] = useState<platoformDataType>({ ...detailData });
+</code>
+这行代码应该是只有第一次打开的时候才执行的，后面 dialog 打开不会重新渲染。所以必须再加一行
+
+```typescript
+useEffect(() => {
+  setUser({ ...detailData });
+}, [detailData]);
+```
+
+## 14. foreach map
+
+foreach 不返回新的数组，如果是 useState 则不会引起 dom 刷新
+
+```typescript
+//table 表格展示的数据
+const [bodyData, setBodyData] =
+  useState<Array<platoformDataType>>(platoformData);
+```
+
+```typescript
+bodyData.foreach((item) => {
+  if (item.id === id) {
+    item = { ...saveData };
+  }
+});
+setBodyData(newData);
+```
+
+上面代码不会引起 dom 的更新。要用下面的
+
+```typescript
+const newData = bodyData.map((item) =>
+  item.id === saveData.id ? { ...saveData } : item
+);
+setBodyData(newData);
+```
+
+或者用
+
+```typescript
+const newData = bodyData.filter((item) => item.checked === false);
+setBodyData(newData);
+```
+
+## 15. react 进阶之 userProduce,Context
+
+Context:避免组件直接用 props 传值，可以免除多重父子组件传值难问题
+userProduce：把事件集中起来处理。
+
+第一步，新建一个 producer，这里主要处理各种方法
+
+这里注意的是“state: Array<platoformDataType>”这个参数的值，实际就是上一个调用 reducer 后返回给页面的 state 的值。
+
+```typescript
+import platoformDataType from '../mock/platformData';
+
+const platformReducer = (state: Array<platoformDataType>, action: any) => {
+  console.log(state);
+  switch (action.type) {
+    case 'search':
+      return action.state.filter(
+        (item: platoformDataType) =>
+          item.groupId.indexOf(action.groupId) > -1 &&
+          item.groupName.indexOf(action.groupName) > -1
+      );
+    case 'delete':
+      return action.state.filter((item: platoformDataType) => !item.checked);
+    case 'add':
+      return [action.state, ...state];
+    case 'edit':
+      // return action.state;
+      return state.map((item: platoformDataType) =>
+        item.id === action.state.id ? { ...action.state } : item
+      );
+    case 'check':
+      return action.state.map((item: platoformDataType) => {
+        return item.id === action.id
+          ? { ...item, checked: !item.checked }
+          : item;
+      });
+    case 'checkAll':
+      return action.state.map((item: platoformDataType) => {
+        return { ...item, checked: action.status };
+      });
+    case 'showAll':
+      return action.state;
+    default:
+      return state;
+  }
+};
+export default platformReducer;
+```
+
+第二步页面
+
+```typescript
+import { TableContainer, Divider } from '@material-ui/core';
+import { createContext, useEffect, useReducer } from 'react';
+import platoformDataType, { platoformData } from '../../mock/platformData';
+import platformReducer from '../../store/platform';
+import PlatFormTableBody1 from './components/TableBody';
+import PlatFormTableHeader1 from './components/TableHeader';
+
+//一个默认初始值，好几个地方用到，所以抛出了。
+export const initialData = {
+  id: '',
+  groupId: '',
+  groupName: '',
+  note: '',
+  checked: false,
+};
+//PlatformContext.Provider  定义这个value的值类型
+export const PlatformContext = createContext({
+  data: [] as Array<platoformDataType>,
+  dispatch: (action: any) => {},
+});
+
+export default function Platform1() {
+  //调用我们上面创建的platformReducer，这个和useState类似，一个是值，一个是处理值的方法。state就是dispatch执行完后返回的方法
+  const [state, dispatch] = useReducer(platformReducer, platoformData);
+
+  return (
+    <PlatformContext.Provider value={{ data: state, dispatch }}>
+      <>
+        <TableContainer component='div'>
+          <PlatFormTableHeader1 />
+          <Divider />
+          <PlatFormTableBody1 />
+        </TableContainer>
+      </>
+    </PlatformContext.Provider>
+  );
+}
+```
+
+第三步让我们看看 PlatFormTableHeader1 页面
+
+<details>
+<summary>PlatFormTableHeader1</summary>
+
+```typescript
+import { Button, Grid, TextField, Box } from '@material-ui/core';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
+import MuiButton from '../../component/MuiButton';
+import styles from '../style.module.css';
+import { useContext, useState } from 'react';
+import { PlatformContext, initialData } from '..';
+import PlatformDetail1 from '../../platform1/components/Detail';
+import platoformDataType, { platoformData } from '../../../mock/platformData';
+
+const PlatFormTableHeader1 = () => {
+  //获取data以及改变data的方法
+  const { data, dispatch } = useContext(PlatformContext);
+  //当前点击新增按钮的时候，默认是initialData
+  const [platform, setPlatform] = useState(initialData);
+  //查询条件1
+  const [groupId, setGroupId] = useState<string>('');
+  //查询条件2
+  const [groupName, setGroupName] = useState<string>('');
+  //dialog是否显示
+  const [open, setOpen] = useState<boolean>(false);
+  //查询
+  const handleSearch = () => {
+    dispatch({
+      type: 'search',
+      state: data,
+      groupId,
+      groupName,
+    });
+  };
+  //重置
+  const handleReset = () => {
+    // console.log(platoformData);
+    dispatch({ type: 'showAll', state: platoformData });
+    setGroupId('');
+    setGroupName('');
+  };
+  //点击新增
+  const handleAdd = () => {
+    setOpen(true);
+  };
+  //点击删除
+  const handleDelete = () => {
+    dispatch({
+      type: 'delete',
+      state: data,
+    });
+  };
+  //关闭dialog，数据重置
+  const handleClose = () => {
+    setOpen(false);
+    //重新初始化
+    setPlatform({ ...initialData });
+  };
+  //新增保存
+  const handleSave = (saveData: platoformDataType) => {
+    // console.log(saveData);
+    dispatch({
+      type: 'add',
+      state: saveData,
+    });
+    setOpen(false);
+    //重新初始化
+    setPlatform({ ...initialData });
+  };
+  return (
+    <>
+      <Grid
+        container
+        direction='row'
+        justifyContent='space-between'
+        alignItems='center'
+        className={styles.topGrid}
+      >
+        <Box className={styles.searchBox}>
+          设置组ID:
+          <TextField
+            variant='outlined'
+            size='small'
+            value={groupId}
+            className={styles.inputTxt}
+            onChange={(e) => setGroupId(e.target.value)}
+          />
+          设置组名称:
+          <TextField
+            variant='outlined'
+            size='small'
+            value={groupName}
+            className={styles.inputTxt}
+            onChange={(e) => setGroupName(e.target.value)}
+          />
+        </Box>
+        <Box className={styles.buttonGroup}>
+          <Button
+            variant='contained'
+            className={styles.serachButton}
+            onClick={handleSearch}
+          >
+            查询
+          </Button>
+          <Button
+            variant='outlined'
+            className={styles.resetButton}
+            onClick={handleReset}
+          >
+            重置
+          </Button>
+          <MuiButton
+            text='增加'
+            endIcon={<AddCircleOutlineIcon />}
+            style={styles.addButton}
+            onClick={handleAdd}
+          />
+          <MuiButton
+            text='删除'
+            endIcon={<RemoveCircleOutlineIcon />}
+            style={styles.deleteButton}
+            onClick={handleDelete}
+          />
+        </Box>
+      </Grid>
+      <PlatformDetail1
+        detailData={platform}
+        open={open}
+        handleClose={handleClose}
+        handleSave={handleSave}
+      />
+    </>
+  );
+};
+export default PlatFormTableHeader1;
+```
+
+</details>
+
+<details>
+<summary>PlatFormTableBody1</summary>
+
+```typescript
+import {
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Checkbox,
+  Grid,
+} from '@material-ui/core';
+import Link from '@material-ui/core/Link';
+
+import styles from '../style.module.css';
+import PageSelect from '../../../components/PageSelect';
+import platoformDataType, { platformColumns } from '../../../mock/platformData';
+import { useContext, useEffect, useState } from 'react';
+import { initialData, PlatformContext } from '..';
+import PlatformDetail1 from '../../platform1/components/Detail';
+
+export default function PlatFormTableBody1() {
+  //当前点击新增按钮的时候，默认是initialData
+  const [platform, setPlatform] = useState(initialData);
+  const { data, dispatch } = useContext(PlatformContext);
+  const [checkedAll, setCheckedAll] = useState<boolean>(false);
+  //dialog是否显示
+  const [open, setOpen] = useState<boolean>(false);
+  //某一行的选择
+  const handleCheck = (id: string) => {
+    dispatch({ type: 'check', state: data, id });
+  };
+  //表头的全选
+  const handleCheckAll = () => {
+    dispatch({ type: 'checkAll', state: data, status: !checkedAll });
+    setCheckedAll(!checkedAll);
+  };
+  //编辑
+  const handleEdit = (item: platoformDataType) => {
+    setOpen(true);
+    setPlatform(item);
+  };
+  //关闭dialog，数据重置
+  const handleClose = () => {
+    setOpen(false);
+    //重新初始化
+    setPlatform({ ...initialData });
+  };
+  //编辑后保存
+  const handleSave = (saveData: platoformDataType) => {
+    dispatch({
+      type: 'edit',
+      state: saveData,
+    });
+    setOpen(false);
+    //重新初始化
+    setPlatform({ ...initialData });
+  };
+  //页面更新后，根据数据的check状态，判断是否全选的checkbox被选中
+  useEffect(() => {
+    setCheckedAll(data?.length > 0 && data.every((item) => item.checked));
+  }, [data]);
+
+  return (
+    <>
+      <Table className={styles.mainGrid}>
+        <TableHead>
+          <TableRow className={styles.tableHeader} component='tr'>
+            <TableCell className={styles.checkColumn}>
+              <Checkbox onClick={handleCheckAll} checked={checkedAll} />
+            </TableCell>
+            {platformColumns.map((item, index) => {
+              return <TableCell key={index}>{item}</TableCell>;
+            })}
+            <TableCell style={{ width: '100px' }}>操作</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {data.map((item) => {
+            return (
+              <TableRow
+                className={styles.tableBody}
+                component='tr'
+                key={item.id}
+              >
+                <TableCell className={styles.checkColumn}>
+                  <Checkbox
+                    onChange={() => handleCheck(item.id)}
+                    checked={item.checked}
+                  />
+                </TableCell>
+                <TableCell>
+                  <Link
+                    href='#'
+                    className={styles.link}
+                    onClick={(e) => handleEdit(item)}
+                  >
+                    {item.groupId}
+                  </Link>
+                </TableCell>
+                <TableCell>{item.groupName}</TableCell>
+                <TableCell>{item.note}</TableCell>
+                <TableCell>
+                  <Link
+                    href='#'
+                    className={styles.link}
+                    onClick={(e) => handleEdit(item)}
+                  >
+                    明细
+                  </Link>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+      <Grid
+        container
+        direction='row'
+        justifyContent='flex-end'
+        alignItems='center'
+      >
+        共10页
+        <PageSelect />
+      </Grid>
+      <PlatformDetail1
+        detailData={platform}
+        open={open}
+        handleClose={handleClose}
+        handleSave={handleSave}
+      />
+    </>
+  );
+}
+```
+
+</details>
