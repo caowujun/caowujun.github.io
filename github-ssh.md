@@ -120,10 +120,11 @@ ssh-add ~/.ssh/id_rsa_tow
 ## 6. git 仓库初始化
 
 如果项目没有经过初始化，就是指的没有.git 文件夹。
-create a new repository on the command line
+create a new repository on the command line(此时服务器不能有 readme 等文件，必须是个空的)
 
 ```bash
 git init
+touch README.md
 git add README.md
 git commit -m "first commit"
 git branch -M main
