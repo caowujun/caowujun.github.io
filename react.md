@@ -10,6 +10,8 @@ _made by caowujun,2022.04.19_
 
 ---
 
+[toc]
+
 ## 1. 安装
 
 - You are running `create-react-app` 5.0.0, which is behind the latest release
@@ -451,10 +453,20 @@ useLocation():作用：获取当前 location 信息，对标5.x中的路由组�
 useMatch():作用：返回当前匹配信息，对标5.x中的路由组件的match属性。
 ```
 
-## 11. React.memo() 是什么？
+## 11. useMemo 是什么？
 
-组件仅在它的 props 发生改变的时候进行重新渲染。通常来说，在组件树中 React 组件，只要有变化就会走一遍渲染流程。但是通过 PureComponent 和 React.memo()，我们可以仅仅让某些组件进行渲染。
-[https://www.cnblogs.com/zhangguicheng/articles/12897605.html](https://www.cnblogs.com/zhangguicheng/articles/12897605.html)
+```typescript
+const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
+```
+
+返回一个 memoized 值。
+
+把“创建”函数和依赖项数组作为参数传入 useMemo，它仅会在某个依赖项改变时才重新计算 memoized 值。这种优化有助于避免在每次渲染时都进行高开销的计算。
+
+记住，传入 useMemo 的函数会在渲染期间执行。请不要在这个函数内部执行不应该在渲染期间内执行的操作，诸如副作用这类的操作属于 useEffect 的适用范畴，而不是 useMemo。
+
+如果没有提供依赖项数组，useMemo 在每次渲染时都会计算新的值。
+[https://zh-hans.reactjs.org/docs/hooks-reference.html#usememo](https://zh-hans.reactjs.org/docs/hooks-reference.html#usememo)
 
 ## 12. React 中样式的 3 种方式
 
@@ -1085,7 +1097,7 @@ setBodyData(newData);
 Context:避免组件直接用 props 传值，可以免除多重父子组件传值难问题
 userProduce：把事件集中起来处理。
 
-第一步，新建一个 producer，这里主要处理各种方法
+第一步，新建一个 producer，这里主要处理各种方法(<font color=red>由于 axios 是异步，在这个地方不能用，所以改成所有数据外部读取，把 data 传进来就行，详情见#16 章</font>)
 
 这里注意的是“state: Array<platoformDataType>”这个参数的值，实际就是上一个调用 reducer 后返回给页面的 state 的值。
 
@@ -1450,3 +1462,328 @@ export default function PlatFormTableBody1() {
 ```
 
 </details>
+
+## 16. react-axios
+
+默认情况下，axios 将 JavaScript 对象序列化为 JSON。 要以 application/x-www-form-urlencoded 格式发送数据，您可以使用以下选项之一。
+
+```typescript
+const qs = require('qs');
+axios.post('/foo', qs.stringify({ bar: 123 }));
+```
+
+或者以另一种方式（ES6）
+
+```typescript
+import qs from 'qs';
+const data = { bar: 123 };
+const options = {
+  method: 'POST',
+  headers: { 'content-type': 'application/x-www-form-urlencoded' },
+  data: qs.stringify(data),
+  url,
+};
+axios(options);
+```
+
+详解：
+axios 默认的 content-type 是 application/json,也就是 java 后端经常让你把参数放在 body 中的那种格式.
+传输的样式是 requestbody
+
+```json
+{
+    name:xxx,
+    age:xxx
+}
+```
+
+如果使用的 qs 进行序列化,那么 content-type 就是 application/x-www-form-urlencoded,也就是常说的表单提交
+传输的样式是 formdata
+
+```json
+name:xxx,
+age:xxx
+```
+
+urlencoding 后是
+
+```json
+name=xxx&age=xxx
+```
+
+所以,实际上是否需要用 qs 去序列化参数完全取决于后端要怎么接受数据
+
+###16.1 demo
+
+- axios
+
+```typescript
+import { rejects } from 'assert';
+import axios from 'axios';
+import { resolve } from 'path';
+import qs from 'qs';
+
+const $http = axios.create({
+  baseURL: 'http://localhost:8080/api/',
+  timeout: 5000,
+});
+
+$http.interceptors.request.use(
+  function (config) {
+    config.headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    };
+    config.data = qs.stringify(config.data);
+    return config;
+  },
+  function (error) {
+    return Promise.reject(error);
+  }
+);
+
+// Add a response interceptor
+$http.interceptors.response.use(
+  function (response) {
+    const { status } = response;
+    if (status === 400) {
+      console.log('400');
+    }
+    return response;
+  },
+  function (error) {
+    return Promise.reject(error);
+  }
+);
+// 封装get，post，将来如果换fetch，可以只改这一个文件即可
+export const $get = (url: string, data?: any) => {
+  return $http.get(url, { params: data });
+};
+export const $post = (url: string, data?: any) => {
+  return $http.post(url, data);
+};
+export default $http;
+```
+
+- 新的 reducer 文件
+
+```typescript
+import platoformDataType3 from '../mock/platformData3';
+import $http, { $get, $post } from '../utils/axiosproxy';
+
+const platformReducer2 = (state: Array<platoformDataType3>, action: any) => {
+  console.log('reducer-state-1', state);
+  switch (action.type) {
+    case 'search':
+    case 'delete':
+    case 'add':
+    case 'edit':
+    case 'showAll':
+      return action.state;
+    case 'check':
+      console.log('action.id-check', action);
+      return action.state.map((item: platoformDataType3) => {
+        return item.id === action.id
+          ? { ...item, checked: !item.checked }
+          : item;
+      });
+    case 'checkAll':
+      return action.state.map((item: platoformDataType3) => {
+        return { ...item, checked: action.status };
+      });
+
+    default:
+      return state;
+  }
+  console.log('reducer-state-2', state);
+};
+export default platformReducer2;
+```
+
+- 示范页面 index.js
+
+```typescript
+import { TableContainer, Divider } from '@material-ui/core';
+import { createContext, useEffect, useReducer } from 'react';
+import platoformDataType3 from '../../mock/platformData3';
+import platformReducer from '../../store/platform3';
+import { $get } from '../../utils/axiosproxy';
+import PlatFormTableBody3 from './components/TableBody';
+import PlatFormTableHeader3 from './components/TableHeader';
+
+export const initialData = {
+  id: '',
+  name: '',
+  application: '',
+  roleType: '',
+  checked: false,
+};
+
+export const PlatformContext = createContext({
+  data: [] as Array<platoformDataType3>,
+  dispatch: (action: any) => {},
+});
+// 一个公共方法，可以给api返回的，加上checked属性
+export const datachange = (data: Array<platoformDataType3>) => {
+  console.log(data);
+  const _dta = data.map((item: platoformDataType3) => {
+    return { ...item, checked: false };
+  });
+  return _dta;
+};
+
+export default function Platform3() {
+  const [state, dispatch] = useReducer(platformReducer, []);
+
+  useEffect(() => {
+    // api返回，并通过上面的datachange转换后，调用dispatch
+    $get('/userList')
+      .then((res: any) => {
+        dispatch({ type: 'showAll', state: [...datachange(res.data.data)] });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  return (
+    <PlatformContext.Provider value={{ data: state, dispatch }}>
+      <>
+        <TableContainer component='div'>
+          <PlatFormTableHeader3 />
+          <Divider />
+          <PlatFormTableBody3 />
+        </TableContainer>
+      </>
+    </PlatformContext.Provider>
+  );
+}
+```
+
+## 17. redux
+
+- store 文件
+
+```typescript
+import { configureStore } from '@reduxjs/toolkit';
+import platformReducer from './platformReducer';
+
+const store = configureStore({
+  reducer: {
+    platform: platformReducer,
+  },
+});
+export type RootState = ReturnType<typeof store.getState>;
+export default store;
+```
+
+- reducer 文件
+
+```typescript
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import platoformDataType3 from '../mock/platformData3';
+// import { initialData } from '../pages/platform3';
+export interface State {
+  data: platoformDataType3[];
+}
+const initialData: State = {
+  data: [
+    { id: '1', name: '2', application: '3', roleType: '4', checked: false },
+  ],
+};
+const platformReducer = createSlice({
+  name: 'platformReducer',
+  initialState: initialData,
+  reducers: {
+    addAction: (
+      state: State,
+      action: PayloadAction<Array<platoformDataType3>>
+    ) => {
+      state.data = [...action.payload];
+    },
+    updateAction: (
+      state: State,
+      action: PayloadAction<Array<platoformDataType3>>
+    ) => {
+      state.data = [...action.payload];
+    },
+    searchAction: (
+      state: State,
+      action: PayloadAction<Array<platoformDataType3>>
+    ) => {
+      state.data = [...action.payload];
+    },
+    showAllAction: (
+      state: State,
+      action: PayloadAction<Array<platoformDataType3>>
+    ) => {
+      state.data = [...action.payload];
+    },
+    deleteAction: (
+      state: State,
+      action: PayloadAction<Array<platoformDataType3>>
+    ) => {
+      state.data = [...action.payload];
+    },
+    checkAllAction: (state: State, action: PayloadAction<boolean>) => {
+      state.data = [...state.data].map((item: platoformDataType3) => {
+        return { ...item, checked: action.payload };
+      });
+    },
+    checkAction: (state: State, action: PayloadAction<string>) => {
+      state.data = [...state.data].map((item: platoformDataType3) => {
+        return item.id === action.payload
+          ? { ...item, checked: !item.checked }
+          : item;
+      });
+    },
+  },
+});
+
+export const {
+  addAction,
+  updateAction,
+  deleteAction,
+  showAllAction,
+  searchAction,
+  checkAllAction,
+  checkAction,
+} = platformReducer.actions;
+export default platformReducer.reducer;
+```
+
+- 页面文件 index.tsx
+
+```typescript
+import { useSelector, useDispatch } from 'react-redux';
+
+const dispatch = useDispatch();
+
+useEffect(() => {
+  $get('/userList')
+    .then((res: any) => {
+      dispatch(showAllAction([...datachange(res.data.data)]));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}, []);
+```
+
+- header.tsx
+
+```typescript
+//应该是从redux取的当前数据
+const { data } = useSelector((state: RootState) => state.platform);
+
+//查询
+const handleSearch = () => {
+  $get('/getuser', { name: name })
+    .then((res: any) => {
+      // console.log(37, 'search', [...datachange(res.data.data)]);
+      dispatch(searchAction([...datachange(res.data.data)]));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+```
