@@ -235,8 +235,8 @@ public class MybatisPlusCodeAutoGenerator {
     public static void main(String[] args) {
 
         String projectPath = System.getProperty("user.dir");//D:\workstation\boot-maven
-        FastAutoGenerator.create("jdbc:mysql://ip:3306/db?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&useSSL=false",
-                "zhanghao", "mima")
+        FastAutoGenerator.create("jdbc:mysql://192.168.109.128:3306/robin?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&useSSL=false",
+                "root", "Win2003@")
                 .globalConfig(builder -> {
                     builder.author("robin") // 设置作者
                             .enableSwagger() // 开启 swagger 模式
@@ -271,12 +271,16 @@ public class MybatisPlusCodeAutoGenerator {
                             .formatXmlFileName("%sXml"); // 转换 xml 文件名称
                 })
                 .injectionConfig(builder -> {
-                    Map<String, String> customFile = new HashMap<>();
                     // DTO，.vm为velocity引擎的，.ftl为freemarker
+                    Map<String, String> customFile = new HashMap<>();
                     customFile.put("VO.java", "/templates/entityVO.java.ftl");
                     customFile.put("Transfer.java", "/templates/entityTransfer.java.ftl");
+                    //注入数据
+                    Map<String, Object> customDataMap = new HashMap<>();
+                    customDataMap.put("rootPackage", "com.example.bootmaven");
 
-                    builder.customFile(customFile);
+                    builder.customFile(customFile).customMap(customDataMap);
+
                 })
                 .templateEngine(new FreemarkerTemplateEngineExtend()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板
                 .execute();
@@ -286,6 +290,11 @@ public class MybatisPlusCodeAutoGenerator {
 
 
 ```
+
+<font color=red>注意</font>
+
+- customDataMap.put("rootPackage", "com.example.bootmaven");
+  可以注入自己想要的数据，比如包名等。
 
 - 这里要注意,前面不需要加什么前缀，默认是 resources 路径下的，后面不加 ftl
 
