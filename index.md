@@ -38,7 +38,7 @@ _made by caowujun,2022.1.19_
 
 - [react umi](umi.md)
 
-- [spring boot](springboot.md.md)
+- [spring boot](springboot.md)
 
 # 相关 url（转）
 
