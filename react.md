@@ -423,26 +423,27 @@ export default function Head(props: any) {
 
 leftmenu.tsx
 
-```tsxexport default function LeftMenu(props: any) {
-    return (
-        <div>
-            <ul>
-                <li>
-                    <Link to="/main/dashboard">dashboard</Link>
-                </li>
-                <li>
-                    <Link to="/main/fire">fire</Link>
-                </li>
-            </ul>
-            <hr />
-        </div>
-    );
+```tsx
+export default function LeftMenu(props: any) {
+  return (
+    <div>
+      <ul>
+        <li>
+          <Link to='/main/dashboard'>dashboard</Link>
+        </li>
+        <li>
+          <Link to='/main/fire'>fire</Link>
+        </li>
+      </ul>
+      <hr />
+    </div>
+  );
 }
 ```
 
 **可以看到，当使用 button 的时候，要事件跳转，用 Link 则不需要。**
 
-_\<NavLink>与\<Link>组件类似，且可实现导航的“高亮”效果。当当前路由匹配的时候可以设置 active_
+<NavLink>与\<Link>组件类似，且可实现导航的“高亮”效果。当当前路由匹配的时候可以设置 active\_
 
 ```text
 useRoutes():作用：根据路由表，动态创建<Routes>和<Route>。
@@ -471,9 +472,6 @@ const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
 ## 12. React 中样式的 3 种方式
 
 ### 12.1 style
-
-<details>
-<summary>style文件</summary>
 
 ```tsx
 //首先是样式文件 style.ts
@@ -507,12 +505,7 @@ const useStyles = {
 export default useStyles;
 ```
 
-</details>
-
 在页面文件中
-
-<details>
-<summary>页面文件</summary>
 
 ```tsx
 import { Button, Divider, TextField, Typography } from '@material-ui/core';
@@ -580,12 +573,7 @@ export default function Login() {
 }
 ```
 
-</details>
-
 ### 12.2 通过 class 来控制
-
-<details>
-<summary>makeStyles 文件</summary>
 
 ```tsx
 //style.ts文件
@@ -650,12 +638,7 @@ const useStyles = makeStyles((theme) => ({
 export default useStyles;
 ```
 
-</details>
-
 在 tsx 文件
-
-<details>
-<summary>在 tsx 文件</summary>
 
 ```tsx
 import {
@@ -892,12 +875,7 @@ export default function Platform() {
 }
 ```
 
-</details>
-
 ### 12.3 通过 css 文件来控制
-
-<details>
-<summary>css/summary>
 
 ```tsx
 //style.module.css
@@ -935,12 +913,7 @@ export default function Platform() {
 }
 ```
 
-</details>
-
 页面文件
-
-<details>
-<summary>页面文件</summary>
 
 ```tsx
 import { Button, Divider, TextField, Typography } from '@material-ui/core';
@@ -1007,8 +980,6 @@ export default function Login() {
   );
 }
 ```
-
-</details>
 
 ## 13. 关于往 dialog 传 detail 数据
 
@@ -1185,9 +1156,6 @@ export default function Platform1() {
 
 第三步让我们看看 PlatFormTableHeader1 页面
 
-<details>
-<summary>PlatFormTableHeader1</summary>
-
 ```tsx
 import { Button, Grid, TextField, Box } from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
@@ -1322,11 +1290,6 @@ const PlatFormTableHeader1 = () => {
 export default PlatFormTableHeader1;
 ```
 
-</details>
-
-<details>
-<summary>PlatFormTableBody1</summary>
-
 ```tsx
 import {
   Table,
@@ -1460,8 +1423,6 @@ export default function PlatFormTableBody1() {
   );
 }
 ```
-
-</details>
 
 ## 16. react-axios
 
