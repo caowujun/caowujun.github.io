@@ -198,6 +198,24 @@ public class FreemarkerTemplateEngineExtend extends FreemarkerTemplateEngine {
             this.outputFile(new File(fileName), objectMap, value);
         });
     }
+
+
+    /*
+     * @author robin
+     * @description 重写write方法这种方式适用于定义需要处理plus自带数据才能得到的数据。比如依赖注入的对象名首字母小写，这种在配置map时是无法处理的，因为plus的默认数据都还没有
+     * @date 2022/7/4 8:40
+     * @param objectMap
+     * @param templatePath
+     * @param outputFile
+     */
+    @Override
+    public void writer(Map<String, Object> objectMap, String templatePath, File outputFile) throws Exception {
+        TableInfo tableInfo = (TableInfo) objectMap.get("table");
+        String entityName = tableInfo.getEntityName();
+        String lowerEntityName = entityName.substring(0, 1).toLowerCase() + entityName.substring(1);
+        objectMap.put("lowerEntityName", lowerEntityName);
+        super.writer(objectMap, templatePath, outputFile);
+    }
 }
 
 
@@ -208,10 +226,12 @@ public class FreemarkerTemplateEngineExtend extends FreemarkerTemplateEngine {
 ```java
 package com.example.bootmaven.autoGenerateCode;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.OutputFile;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+import com.baomidou.mybatisplus.generator.fill.Column;
 import com.example.bootmaven.BaseController;
 
 import java.util.Collections;
@@ -259,6 +279,8 @@ public class MybatisPlusCodeAutoGenerator {
                             .enableTableFieldAnnotation()//开启生成实体时生成字段注解
                             .naming(NamingStrategy.underline_to_camel)//数据库表映射到实体的命名策略
                             .enableLombok()//开启 lombok 模型
+                            .addTableFills(new Column("createat", FieldFill.INSERT))
+                            .addTableFills(new Column("updateat", FieldFill.UPDATE))
                             .controllerBuilder()
                             .superClass(BaseController.class)//设置父类
                             .enableRestStyle()//开启生成@RestController 控制器
