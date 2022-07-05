@@ -12,87 +12,156 @@ _made by caowujun,2022.3.19_
 ![新建springboot](/images/springboot/1.png)
 ![新建springboot](/images/springboot/2.png)
 ![新建springboot](/images/springboot/3.png)
-<font color=red>更正:不要加入 lombok，一直提示错误。</font>
-pom 文件增加几个依赖
+<font color=red>更正:上面的图里不要加入 lombok，一直提示错误。</font>
+pom 文件增加几个依赖(初始的时候比较少，后来随着我们功能越来越多，这里的 pom 依赖也越多，直接放一个总的)
 
 ```xml
-<!-- mybatisplus -->
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.0</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.example</groupId>
+    <artifactId>boot-maven</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>boot-maven</name>
+    <description>Demo project for Spring Boot</description>
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <!--            去除自带的log-->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- mysql 依赖 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- mybatis plus -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>3.5.1</version>
         </dependency>
-        <!-- 数据库加密 -->
+        <!-- mybatis plus 自动生成代码-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-generator</artifactId>
+            <version>3.5.1</version>
+        </dependency>
+        <!-- mybatis plus 自动生成代码用的引擎 -->
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.31</version>
+        </dependency>
+        <!-- druid数据库加密 -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
             <version>1.2.4</version>
         </dependency>
-<!-- swagger -->
+        <!-- swagger -->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-boot-starter</artifactId>
             <version>3.0.0</version>
         </dependency>
+        <!-- swagger 皮肤扩展-->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-spring-boot-starter</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+
+        <!-- lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.22</version>
+        </dependency>
+
+        <!--VO,DO转换工具-->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.5.1.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>1.5.1.Final</version>
+        </dependency>
+        <!--Hutool是一个小而全的Java工具类库-->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.4</version>
+        </dependency>
+        <!--log4j-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j</artifactId>
+            <version>1.3.8.RELEASE</version>
+        </dependency>
+        <!--db-flway-->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>6.1.0</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>5.1.1</version>
+                <configuration>
+                    <url>jdbc:mysql://ip:3306/db?serverTimezone=Asia/Shanghai&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false
+                    </url>
+                    <user>username</user>
+                    <password>pwd</password>
+                    <driver>com.mysql.cj.jdbc.Driver</driver>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+
 ```
-
-增加 swagger config
-
-```java
-
-@Configuration
-@EnableOpenApi
-@EnableWebMvc
-public class Swagger3Config implements WebMvcConfigurer {
-    /**
-     * 是否开启swagger配置，生产环境需关闭
-     */
-    @Value("${swagger.enabled}")
-    private boolean enable;
-    @Bean
-    public Docket createRestApi() {
-        return new Docket(DocumentationType.OAS_30)
-                .apiInfo(apiInfo())
-                .select() // 指定需要发布到Swagger的接口目录，不支持通配符
-                .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
-                .paths(PathSelectors.any())
-                .build();
-    }
-
-    private ApiInfo apiInfo() {
-        return new ApiInfoBuilder()
-                .title("Swagger3接口文档")
-                .description("SpringBoot后台接口")
-//                .contact(new Contact("Ray。", "http://www.ruiyeclub.cn", "ruiyeclub@foxmail.com"))
-                .version("1.0")
-                .build();
-    }
-
-
-    @SafeVarargs
-    private final <T> Set<T> newHashSet(T... ts) {
-        if (ts.length > 0) {
-            return new LinkedHashSet<>(Arrays.asList(ts));
-        }
-        return null;
-    }
-
-    private List<Response> getGlobalResonseMessage()
-    {
-        List<Response> responseList=new ArrayList<>();
-        responseList.add(new ResponseBuilder().code("404").description("找不到资源").build());
-        return responseList;
-    }
-}
-```
-
-- 问题
-
-```json
-Failed to start bean 'documentationPluginsBootstrapper'; nested exception is
-```
-
-解决：在 swaggerConfig 类上加@EnableWebMvc.上面代码上已经修正果的。
 
 ## 2. druid 数据库加密
 
@@ -130,18 +199,17 @@ spring:
 密钥生成命令，跳转到 druid 的 jar 包下面，打开 cmd
 
 ```bash
- java -cp druid-1.2.4.jar com.alibaba.druid.filter.config.ConfigTools Win2003@ >miyao.txt
+ java -cp druid-1.2.4.jar com.alibaba.druid.filter.config.ConfigTools userpwd >miyao.txt
 ```
 
-## 3.mybatis-plus 自动生成代码
+## 3. mybatis-plus 自动生成代码
 
 [https://blog.csdn.net/qq_42682745/article/details/124829925](参考资料1)
 [https://blog.csdn.net/qq_42682745/article/details/124906331](参考资料2)
 
-easy code 目前的版本不够新，默认返回的 R 还是上个版本的，研究了下 mybatis-plus 自带的 3.5.1 及以上版本可用的自动生成。
+easy code 目前的版本不够新，默认返回的 R 还是上个版本的，研究了下 mybatis-plus 自带的 3.5.1 及以上版本可用的自动生成。(我把 R 从上个版本抽了出来，毕竟觉得挺好用的)
 适用版本：mybatis-plus-generator 3.5.1 及其以上版本，对历史版本不兼容！
-另外自带的 dto 生成代码有问题，它生成 dto 的路径是/entityname/dto.java。
-所以我重写了 FreemarkerTemplateEngineExtend，见 3.2
+另外自带的 dto 生成代码有问题，它生成 dto 的路径是/entityname/dto.java。所以我重写了 FreemarkerTemplateEngineExtend，见 3.2.
 
 ### 3.1 总图
 
@@ -881,16 +949,18 @@ public class SpringMvcSupport extends WebMvcConfigurationSupport {
 - 关于依赖,有时候需要 clean 然后 compile 下。刷新下依赖。
 
 ```xml
-<dependency>
+        <!-- swagger -->
+        <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-boot-starter</artifactId>
             <version>3.0.0</version>
-</dependency>
-<dependency>
+        </dependency>
+        <!-- swagger 皮肤扩展-->
+        <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-spring-boot-starter</artifactId>
             <version>3.0.3</version>
-</dependency>
+        </dependency>
 ```
 
 - 然后发现了个这么事
@@ -948,6 +1018,14 @@ public class Swagger3Config implements WebMvcConfigurer {
 
 }
 ```
+
+- 问题
+
+```json
+Failed to start bean 'documentationPluginsBootstrapper'; nested exception is
+```
+
+解决：在 swaggerConfig 类上加@EnableWebMvc.上面代码上已经修正果的。
 
 然后是新的 SpringMvcSupport
 
@@ -1018,3 +1096,202 @@ public class SpringMvcSupport implements WebMvcConfigurer {
 ```
 
 ## 6. 登录 token，jwt，hutool 工具。
+
+原来是自己写 jwt 工具，后来发现 hutool 已经继承了，直接上代码
+
+```java
+    public  static final  byte[] TOKEN_SECRET = "your_privatekey".getBytes();
+
+```
+
+```java
+  /*
+     * @author robin
+     * @description 登录,expire_time的效果未验证，总感觉超过2小时了还没失效，难道 要自己写验证？
+     * @date 2022/6/29 16:55
+     * @param sysuser
+     * @param request
+     * @param response
+     * @return com.example.bootmaven.test.R<?>
+     */
+    @PostMapping(value = "login.do")
+    @ApiOperation(value = "登录", notes = "根据账号密码登录")
+    public R<?> login(@RequestBody Sysuser sysuser, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            //1fa65854-92aa-42a9-b16b-ffdb6a68ae91
+            sysuser = iSysuserService.getById(sysuser.getId());
+            if (null != sysuser) {
+                Sysuser finalSysuser = sysuser;
+                Map<String, Object> map = new HashMap<String, Object>() {
+                    private static final long serialVersionUID = 1L;
+                    {
+                        put("id", finalSysuser.getId());
+                        put("loginname", finalSysuser.getUsername());
+                        put("cnname", finalSysuser.getCnname());
+                        put("expire_time", System.currentTimeMillis() + 120 * 60 * 1000);
+                    }
+                };
+                String token = JWTUtil.createToken(map, GlobalValue.TOKEN_SECRET);
+                System.out.print(token);
+                response.addHeader("token", token);
+
+                return success(transfer.d2v(sysuser));
+            } else {
+                return success(false);
+            }
+        } catch (Exception ex) {
+            return failed(ResponseCode.FAILED);
+        }
+    }
+```
+
+拦截器见 #4 章
+
+## 7. 日志
+
+hutool 集成了日志输出的方法
+
+- pom,增加 spring-boot-starter-web 中增加 exclusions 节点，引入 log4j
+
+```xml
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <!--            去除自带的log-->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+                <!--log4j-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j</artifactId>
+            <version>1.3.8.RELEASE</version>
+        </dependency>
+
+```
+
+- log4j.properties
+
+```properties
+log4j.rootLogger=INFO,DEBUG,ERROR, stdout
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.Target=System.out
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} %p %c{2}: %m%n
+
+#----------------------------文件存在?目根目?下-----------------------#
+#----------------------------------------------------------------------------------------------------
+#?出INFO??以上的内容到info.log中
+log4j.logger.INFO=INFO
+log4j.appender.INFO = org.apache.log4j.DailyRollingFileAppender
+log4j.appender.INFO.File = logs/supersiver/objects/info.log
+log4j.appender.INFO.Threshold = INFO
+log4j.appender.INFO.Append = true
+log4j.appender.INFO.layout = org.apache.log4j.PatternLayout
+log4j.appender.INFO.layout.ConversionPattern = %-d{yyyy-MM-dd HH:mm:ss}  [ %t:%r ] - [ %p ]  %m%n
+#-----------------------------------------------------------------------------------------------------
+#?出DEBUG ??以上的日志到debugger.log
+log4j.logger.DEBUG=DEBUG
+log4j.appender.DEBUG = org.apache.log4j.DailyRollingFileAppender
+log4j.appender.DEBUG.File = logs/supersiver/objects/debugger.log
+log4j.appender.DEBUG.Threshold = DEBUG
+log4j.appender.DEBUG.Append = true
+log4j.appender.DEBUG.layout = org.apache.log4j.PatternLayout
+log4j.appender.DEBUG.layout.ConversionPattern = %-d{yyyy-MM-dd HH:mm:ss}  [ %t:%r ] - [ %p ]  %m%n
+#-----------------------------------------------------------------------------------------------------
+#?出ERROR ??以上的日志到error.log
+log4j.logger.ERROR=ERROR
+log4j.appender.ERROR = org.apache.log4j.DailyRollingFileAppender
+log4j.appender.ERROR.File =logs/supersiver/objects/error.log
+log4j.appender.ERROR.Threshold = ERROR
+log4j.appender.ERROR.Append = true
+log4j.appender.ERROR.layout = org.apache.log4j.PatternLayout
+log4j.appender.ERROR.layout.ConversionPattern = %-d{yyyy-MM-dd HH:mm:ss}  [ %t:%r ] - [ %p ]  %m%n
+```
+
+然后代码中使用
+
+```java
+StaticLog.info("您所访问的页面请求中有违反安全规则元素存在，拒绝访问!.", "ERROR");
+或者
+//推荐创建不可变静态类成员变量
+private static final Log log = LogFactory.get();
+log.log(Level.INFO, "init");
+
+```
+
+## 8. flyway
+
+[原文链接：https://blog.csdn.net/qq_41378597/article/details/124134146](原文链接：https://blog.csdn.net/qq_41378597/article/details/124134146)
+
+### 8.1 工作流程：
+
+- 项目启动，应用程序完成数据库连接池的建立后，Flyway 自动运行。
+- 初次使用时，flyway 会创建一个 flyway_schema_history 表，用于记录 sql 执行记录。
+- Flyway 会扫描项目指定路径下(默认是 classpath:db/migration )的所有 sql 脚本，与 flyway_schema_history 表脚本记录进行比对。如果数据库记录执行过的脚本记录，与项目中的 sql 脚本不一致，Flyway 会报错并停止项目执行。
+- 如果校验通过，则根据表中的 sql 记录最大版本号，忽略所有版本号不大于该版本的脚本。再按照版本号从小到大，逐个执行其余脚本。
+- flyway 执行 migrate 必须在空白的数据库上进行，否则报错。
+- 对于已经有数据的数据库，必须先 baseline，然后才能 migrate。
+- clean 操作是删除数据库的所有内容，包括 baseline 之前的内容。
+- 尽量不要修改已经执行过的 SQL，即便是 R 开头的可反复执行的 SQL，它们会不利于数据迁移。
+- 当需要做数据迁移的时候，更换一个新的空白数据库，执行下 migrate 命令，所有的数据库更改都可以一步到位地迁移过去
+
+### 8.2 代码
+
+- pom 文件新增
+
+```xml
+        <!--db-flway-->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>6.1.0</version>
+        </dependency>
+```
+
+- 另外 pom 文件的 plugin 增加
+
+```xml
+ <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>5.1.1</version>
+                <configuration>
+                    <url>jdbc:mysql://192.168.109.128:3306/robin?serverTimezone=Asia/Shanghai&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false
+                    </url>
+                    <user>root</user>
+                    <password>Win2003@</password>
+                    <driver>com.mysql.cj.jdbc.Driver</driver>
+                </configuration>
+            </plugin>
+```
+
+- yml 增加配置
+
+```yml
+flyway:
+  enabled: true
+  baseline-on-migrate: true
+  clean-disabled: true
+  encoding: utf-8
+  locations: classpath：db/migration
+  sql-migration-prefix: V
+  sql-migration-separator: __
+  sql-migration-suffixes: .sql
+```
+
+- resource 目录下建立文件夹 db/migration
+
+界面如图
+![flyway](/images/springboot/5.png)
+
+![flyway sql](/images/springboot/6.png)
+
+1. V0 是 ddl。
+2. V1 是基本数据初始化。
+3. 如果后续有增加，按版本号往上+1。

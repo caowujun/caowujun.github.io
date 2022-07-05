@@ -159,7 +159,7 @@ render() {
 
 在下面的示例中，FancyButton 使用 React.forwardRef 来获取传递给它的 ref，然后转发到它渲染的 DOM button：
 
-```typescript
+```tsx
 const FancyButton = React.forwardRef((props, ref) => (
   <button ref={ref} className='FancyButton'>
     {props.children}
@@ -187,7 +187,7 @@ const ref = React.createRef();
 React 中的一个常见模式是一个组件返回多个元素。Fragments 允许你将子列表分组，而无需向 DOM 添加额外节点。
 注：类似 vue 的 template，因为 render 返回只能有一个根元素，有时候用 div 会不支持，比如下面的代码。用这个类似 template 的，就可以解析了
 
-```typescript
+```tsx
 class Table extends React.Component {
   render() {
     return (
@@ -203,7 +203,7 @@ class Table extends React.Component {
 
 以下是错误的：
 
-```typescript
+```tsx
 class Columns extends React.Component {
   render() {
     return (
@@ -218,7 +218,7 @@ class Columns extends React.Component {
 
 下面 2 种都是正确的：
 
-```typescript
+```tsx
 class Columns extends React.Component {
   render() {
     return (
@@ -250,7 +250,7 @@ props（“properties” 的缩写）和 state 都是普通的 JavaScript 对象
 
 调用 setState 其实是异步的 —— 不要指望在调用 setState 之后，this.state 会立即映射为新的值。如果你需要基于当前的 state 来计算出新的值，那你应该传递一个函数，而不是一个对象（详情见下文）。
 
-```typescript
+```tsx
 incrementCount() {
   // 注意：这样 *不会* 像预期的那样工作。
   this.setState({count: this.state.count + 1});
@@ -273,7 +273,7 @@ handleSomething() {
 
 给 setState 传递一个函数，而不是一个对象，就可以确保每次的调用都是使用最新版的 state（见下面的说明）。
 
-```typescript
+```tsx
 incrementCount() {
   this.setState((state) => {
     // 重要：在更新的时候读取 `state`，而不是 `this.state`。
@@ -294,7 +294,7 @@ handleSomething() {
 
 举一个例子
 
-```typescript
+```tsx
 const handleReset = () => {
   console.log(groupId, groupName);
   setGroupId('');
@@ -317,13 +317,13 @@ index.tsx:65 handleSearch
 
 - redirect,访问/main 的时候跳转到/event
 
-```typescript
+```tsx
 <Route path='/main' element={<Redirect to='/event' />} />
 ```
 
 - 整页面跳转
 
-```typescript
+```tsx
 export default function Login() {
   return (
     <div>
@@ -333,7 +333,7 @@ export default function Login() {
 }
 ```
 
-```typescript
+```tsx
 function DD() {
   return <Link to='/login'>ddd</Link>;
 }
@@ -347,7 +347,7 @@ function DD() {
 
 index.tsx
 
-```typescript
+```tsx
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
@@ -362,7 +362,7 @@ root.render(
 
 app.tsx
 
-```typescript
+```tsx
 function App() {
   return (
     <Routes>
@@ -379,14 +379,14 @@ function App() {
 
 注意：如果想默认加载 Dashboard,需要这样设置
 
-```typescript
+```tsx
 /* <Route path="dashboard" element={<DashBoard />} /> */
 <Route index element={<DashBoard />} />
 ```
 
 main.tsx
 
-```typescript
+```tsx
 export default function Main(props: any) {
   return (
     <div className={style.box}>
@@ -409,7 +409,7 @@ export default function Main(props: any) {
 
 head.tsx
 
-```typescript
+```tsx
 export default function Head(props: any) {
   const navigate = useNavigate();
   return (
@@ -423,7 +423,7 @@ export default function Head(props: any) {
 
 leftmenu.tsx
 
-```typescriptexport default function LeftMenu(props: any) {
+```tsxexport default function LeftMenu(props: any) {
     return (
         <div>
             <ul>
@@ -455,7 +455,7 @@ useMatch():作用：返回当前匹配信息，对标5.x中的路由组件的mat
 
 ## 11. useMemo 是什么？
 
-```typescript
+```tsx
 const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
 ```
 
@@ -475,7 +475,7 @@ const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
 <details>
 <summary>style文件</summary>
 
-```typescript
+```tsx
 //首先是样式文件 style.ts
 const useStyles = {
   paper: {
@@ -514,7 +514,7 @@ export default useStyles;
 <details>
 <summary>页面文件</summary>
 
-```typescript
+```tsx
 import { Button, Divider, TextField, Typography } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -587,7 +587,7 @@ export default function Login() {
 <details>
 <summary>makeStyles 文件</summary>
 
-```typescript
+```tsx
 //style.ts文件
 import { red } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
@@ -657,7 +657,7 @@ export default useStyles;
 <details>
 <summary>在 tsx 文件</summary>
 
-```typescript
+```tsx
 import {
   TableContainer,
   Table,
@@ -899,7 +899,7 @@ export default function Platform() {
 <details>
 <summary>css/summary>
 
-```typescript
+```tsx
 //style.module.css
 .paper {
   width: 400px;
@@ -942,7 +942,7 @@ export default function Platform() {
 <details>
 <summary>页面文件</summary>
 
-```typescript
+```tsx
 import { Button, Divider, TextField, Typography } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -1014,7 +1014,7 @@ export default function Login() {
 
 传过去的 detailData，如果是只做 view，那么可以在代码中
 
-```typescript
+```tsx
 <TextField
  required
  autoFocus
@@ -1028,11 +1028,11 @@ export default function Login() {
 但是如果是要兼容做编辑，就不行了，无法改变 textbox 的值，应该是 detailData 是非响应式的
 需要
 
-```typescript
+```tsx
 const [user, setUser] = useState<platoformDataType>({ ...detailData });
 ```
 
-```typescript
+```tsx
 <TextField
   required
   autoFocus
@@ -1051,7 +1051,7 @@ user.groupId 的值居然是空的。
 </code>
 这行代码应该是只有第一次打开的时候才执行的，后面 dialog 打开不会重新渲染。所以必须再加一行
 
-```typescript
+```tsx
 useEffect(() => {
   setUser({ ...detailData });
 }, [detailData]);
@@ -1061,13 +1061,13 @@ useEffect(() => {
 
 foreach 不返回新的数组，如果是 useState 则不会引起 dom 刷新
 
-```typescript
+```tsx
 //table 表格展示的数据
 const [bodyData, setBodyData] =
   useState<Array<platoformDataType>>(platoformData);
 ```
 
-```typescript
+```tsx
 bodyData.foreach((item) => {
   if (item.id === id) {
     item = { ...saveData };
@@ -1078,7 +1078,7 @@ setBodyData(newData);
 
 上面代码不会引起 dom 的更新。要用下面的
 
-```typescript
+```tsx
 const newData = bodyData.map((item) =>
   item.id === saveData.id ? { ...saveData } : item
 );
@@ -1087,7 +1087,7 @@ setBodyData(newData);
 
 或者用
 
-```typescript
+```tsx
 const newData = bodyData.filter((item) => item.checked === false);
 setBodyData(newData);
 ```
@@ -1101,7 +1101,7 @@ userProduce：把事件集中起来处理。
 
 这里注意的是“state: Array<platoformDataType>”这个参数的值，实际就是上一个调用 reducer 后返回给页面的 state 的值。
 
-```typescript
+```tsx
 import platoformDataType from '../mock/platformData';
 
 const platformReducer = (state: Array<platoformDataType>, action: any) => {
@@ -1143,7 +1143,7 @@ export default platformReducer;
 
 第二步页面
 
-```typescript
+```tsx
 import { TableContainer, Divider } from '@material-ui/core';
 import { createContext, useEffect, useReducer } from 'react';
 import platoformDataType, { platoformData } from '../../mock/platformData';
@@ -1188,7 +1188,7 @@ export default function Platform1() {
 <details>
 <summary>PlatFormTableHeader1</summary>
 
-```typescript
+```tsx
 import { Button, Grid, TextField, Box } from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
@@ -1327,7 +1327,7 @@ export default PlatFormTableHeader1;
 <details>
 <summary>PlatFormTableBody1</summary>
 
-```typescript
+```tsx
 import {
   Table,
   TableHead,
@@ -1467,14 +1467,14 @@ export default function PlatFormTableBody1() {
 
 默认情况下，axios 将 JavaScript 对象序列化为 JSON。 要以 application/x-www-form-urlencoded 格式发送数据，您可以使用以下选项之一。
 
-```typescript
+```tsx
 const qs = require('qs');
 axios.post('/foo', qs.stringify({ bar: 123 }));
 ```
 
 或者以另一种方式（ES6）
 
-```typescript
+```tsx
 import qs from 'qs';
 const data = { bar: 123 };
 const options = {
@@ -1517,7 +1517,7 @@ name=xxx&age=xxx
 
 - axios
 
-```typescript
+```tsx
 import { rejects } from 'assert';
 import axios from 'axios';
 import { resolve } from 'path';
@@ -1566,7 +1566,7 @@ export default $http;
 
 - 新的 reducer 文件
 
-```typescript
+```tsx
 import platoformDataType3 from '../mock/platformData3';
 import $http, { $get, $post } from '../utils/axiosproxy';
 
@@ -1601,7 +1601,7 @@ export default platformReducer2;
 
 - 示范页面 index.js
 
-```typescript
+```tsx
 import { TableContainer, Divider } from '@material-ui/core';
 import { createContext, useEffect, useReducer } from 'react';
 import platoformDataType3 from '../../mock/platformData3';
@@ -1663,7 +1663,7 @@ export default function Platform3() {
 
 - store 文件
 
-```typescript
+```tsx
 import { configureStore } from '@reduxjs/toolkit';
 import platformReducer from './platformReducer';
 
@@ -1678,7 +1678,7 @@ export default store;
 
 - reducer 文件
 
-```typescript
+```tsx
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import platoformDataType3 from '../mock/platformData3';
 // import { initialData } from '../pages/platform3';
@@ -1753,7 +1753,7 @@ export default platformReducer.reducer;
 
 - 页面文件 index.tsx
 
-```typescript
+```tsx
 import { useSelector, useDispatch } from 'react-redux';
 
 const dispatch = useDispatch();
@@ -1771,7 +1771,7 @@ useEffect(() => {
 
 - header.tsx
 
-```typescript
+```tsx
 //应该是从redux取的当前数据
 const { data } = useSelector((state: RootState) => state.platform);
 
