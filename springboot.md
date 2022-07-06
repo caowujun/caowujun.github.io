@@ -178,6 +178,10 @@ springboot 下,pom 文件
 yml
 
 ```yml
+server:
+  port: 5015
+  servlet:
+    context-path: /boot/
 spring:
   application:
     name: boot
@@ -185,15 +189,24 @@ spring:
     allow-bean-definition-overriding: true
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://ip:3306/db?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    url: jdbc:mysql://ip:3306/robin?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&useSSL=false
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: XOnIiT/L9aIj1BoFgcGgIxqUmnC2AZlkc/WfCBVPdDLGVVbW81STArqBUTeDaGBQKF4YdfMXCTLjwuDIozt9Dw==
+    username: username
+    password: 加密后的pwd
     druid:
       filter:
         config:
           enabled: true
-      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIkR+Y73QCtq2P8jlpxUWbYiAdowGPgkABXfLO79Bwc0Babv2urmjbFGMoDZKfTR5QlS19ZUcDFu1YoJ0o533mMCAwEAAQ==
+      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJjVoNjug97bUT80hzrM761GNC4un1csTEff6QnPj4CAgWLDLYyuwoVfi+ll0+iMZRYR04gn52gE39H10BIOSrkCAwEAAQ==
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    clean-disabled: true
+    encoding: utf-8
+    locations: classpath：db/migration
+    sql-migration-prefix: V
+    sql-migration-separator: __
+    sql-migration-suffixes: .sql
 ```
 
 密钥生成命令，跳转到 druid 的 jar 包下面，打开 cmd
@@ -851,12 +864,17 @@ return null;
 新建一个拦截器 HandlerInterceptorAdapter,功能是未登录的人不能访问 controller
 
 ```java
-package com.example.bootmaven.config;
+package com.example.bootmaven.config.interceptor;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
-import com.alibaba.druid.wall.violation.ErrorCode;
-import com.example.bootmaven.tools.JsonUtils;
-import com.example.bootmaven.tools.response.R;
+import cn.hutool.jwt.JWTValidator;
+import cn.hutool.log.StaticLog;
+import com.example.bootmaven.config.GlobalValue;
+import com.example.bootmaven.response.R;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -864,6 +882,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author robin
@@ -873,34 +893,46 @@ import javax.servlet.http.HttpServletResponse;
 @Configuration
 public class HandlerInterceptorAdapter implements HandlerInterceptor {
 
-/*
- * @author robin
- * @description 拦截没有登录的请求，并在没权限的说话返回一个警告
- * @date 2022/6/30 13:46
- * @param request
- * @param response
- * @param handler
- * @return boolean
- */
+    /*
+     * @author robin
+     * @description 拦截没有登录的请求，并在没权限的说话返回一个警告
+     * 调用时间：Controller方法处理之前,执行顺序：链式Intercepter情况下，Intercepter按照声明的顺序一个接一个执行,若返回false，则中断执行，注意：不会进入afterCompletion
+     * @date 2022/6/30 13:46
+     * @param request
+     * @param response
+     * @param handler
+     * @return boolean
+     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = request.getHeader("Authorization");
-        boolean result = StringUtils.hasLength(token) && JWTUtil.verify(token, GlobalValue.TOKEN_SECRET);
+        DateTime expire_time = DateUtil.date((Long) JWTUtil.parseToken(token).getPayload("expire_time"));
+        boolean result = StringUtils.hasLength(token) && JWTUtil.verify(token, GlobalValue.TOKEN_SECRET) && expire_time.after(DateUtil.date());
+        //        JWTUtil.parseToken(token).validate(0)一直等于false，不知道为什么
         if (result) {
             return true;
         } else {
             // response.setCharacterEncoding("utf-8");//返回？？？使用这一行可以解决,或者用下面这行
             response.setContentType("text/html;charset=utf-8");
             response.getWriter().print(R.failed("没有权限"));
+            StaticLog.info("您没有权限，拒绝访问!.", "WARN");
             return false;
         }
     }
 
+    /*
+    调用前提：preHandle返回true
+    调用时间：Controller方法处理完之后，DispatcherServlet进行视图的渲染之前，也就是说在这个方法中你可以对ModelAndView进行操作
+     */
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 
     }
 
+    /*
+    调用前提：preHandle返回true
+    调用时间：DispatcherServlet进行视图的渲染之后
+     */
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 
@@ -913,11 +945,10 @@ public class HandlerInterceptorAdapter implements HandlerInterceptor {
 注册拦截器
 
 ```java
-package com.example.bootmaven.config;
+package com.example.bootmaven.config.interceptor;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -927,17 +958,61 @@ import javax.annotation.Resource;
  * @description
  */
 @Configuration
-public class SpringMvcSupport extends WebMvcConfigurationSupport {
+public class SpringMvcSupport implements WebMvcConfigurer {
 
+
+    //过滤器与拦截器原理    https://blog.csdn.net/weixin_45433031/article/details/125614080
     @Resource
     HandlerInterceptorAdapter handlerInterceptorAdapter;
 
+    /*
+     * @author robin
+     * @description 加载拦截器
+     * @date 2022/6/30 10:24
+     * @param registry
+     */
     @Override
-    protected void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(handlerInterceptorAdapter).addPathPatterns("/**");
-        super.addInterceptors(registry);
+    public void addInterceptors(InterceptorRegistry registry) {
+        String[] excludePatterns = new String[]{
+                "/sysuser/login.do",
+                "/swagger-resources/**",
+                "/webjars/**",
+                "/v2/**",
+                "/v3/**",
+                "/swagger-ui/**",
+                "/api",
+                "/api-docs",
+                "/api-docs/**",
+                "/doc.html",
+                "/doc.html/**",
+                "***/error"
+        };
+        registry.addInterceptor(handlerInterceptorAdapter)
+                .addPathPatterns("/**")
+                .excludePathPatterns(excludePatterns);
+    }
+
+    //https://doc.xiaominfo.com/knife4j/faq/springboot-404.html,解决springboot无法访问新的皮肤问题。
+    /*
+     * @author robin
+     * @description 加载资源映射，Swagger3不加这个会报错
+     * @date 2022/6/30 10:24
+     * @param registry
+     */
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/swagger-ui/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/springfox-swagger-ui/");
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("classpath:/static/");
+        registry.addResourceHandler("doc.html")
+                .addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+
     }
 }
+
 
 ```
 
@@ -1025,7 +1100,7 @@ public class Swagger3Config implements WebMvcConfigurer {
 Failed to start bean 'documentationPluginsBootstrapper'; nested exception is
 ```
 
-解决：在 swaggerConfig 类上加@EnableWebMvc.上面代码上已经修正果的。
+解决：在 swaggerConfig 类上加@EnableWebMvc.上面代码上已经修正过的。
 
 然后是新的 SpringMvcSupport
 
@@ -1295,3 +1370,472 @@ flyway:
 1. V0 是 ddl。
 2. V1 是基本数据初始化。
 3. 如果后续有增加，按版本号往上+1。
+
+## 9. 过滤器
+
+参考[https://blog.csdn.net/qq_23107097/article/details/120130490](https://blog.csdn.net/qq_23107097/article/details/120130490)
+
+- XssAndSqlHttpServletRequestWrapper
+
+```java
+package com.example.bootmaven.config.filter;
+
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HtmlUtil;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.google.common.base.Charsets;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.servlet.ReadListener;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.regex.Pattern;
+
+/**
+ * @author robin
+ * @date 2022年07月04日 9:57
+ * @description
+ */
+public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrapper {
+
+    HttpServletRequest httpServletRequest = null;
+    private String body;
+    private static final Set<String> notAllowedKeyWords = new HashSet<String>(0);
+    static {
+        String key = "and|exec|insert|select|delete|update|count|*|%|chr|mid|master|truncate|char|declare|;|or|-|+";
+        String[] keyStr = key.split("\\|");
+        notAllowedKeyWords.addAll(Arrays.asList(keyStr));
+    }
+
+    public XssAndSqlHttpServletRequestWrapper(HttpServletRequest request) throws IOException {
+        super(request);
+        httpServletRequest = request;
+        StringBuilder stringBuilder = new StringBuilder();
+        BufferedReader bufferedReader = null;
+        try {
+            InputStream inputStream = request.getInputStream();
+            if (inputStream != null) {
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+                char[] charBuffer = new char[128];
+                int bytesRead = -1;
+                while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
+                    stringBuilder.append(charBuffer, 0, bytesRead);
+                }
+            } else {
+                stringBuilder.append("");
+            }
+        } catch (IOException ex) {
+            throw ex;
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException ex) {
+                    throw ex;
+                }
+            }
+        }
+        body = stringBuilder.toString();
+    }
+
+
+    @Override
+    public String getParameter(String name) {
+        String value = super.getParameter(name);
+        if (!StrUtil.hasEmpty())
+            value = HtmlUtil.filter(value);
+        return value;
+    }
+
+    @Override
+    public String[] getParameterValues(String name) {
+        String[] values = super.getParameterValues(name);
+        if (null != values) {
+            for (int i = 0, l = values.length; i < l; i++) {
+                values[i] = !StrUtil.hasEmpty(values[i]) ? HtmlUtil.filter(values[i]) : values[i];
+            }
+        }
+        return values;
+    }
+
+    @Override
+    public Map<String, String[]> getParameterMap() {
+        Map<String, String[]> parameters = super.getParameterMap();
+        Map<String, String[]> map = new LinkedHashMap<>();
+        if (parameters != null) {
+            for (String key : parameters.keySet()) {
+                String[] values = parameters.get(key);
+                for (int i = 0, l = values.length; i < l; i++) {
+                    values[i] = !StrUtil.hasEmpty(values[i]) ? HtmlUtil.filter(values[i]) : values[i];
+                }
+                map.put(key, values);
+            }
+        }
+        return map;
+    }
+
+    @Override
+    public String getHeader(String name) {
+        String value = super.getHeader(name);
+        if (!StrUtil.hasEmpty())
+            value = HtmlUtil.filter(value);
+        return value;
+    }
+
+    public HttpServletRequest getHttpServletRequest() {
+        return httpServletRequest;
+    }
+
+
+    public static String stripXSSAndSql(String value) {
+        if (value != null) {
+// NOTE: It's highly recommended to use the ESAPI library and
+// uncomment the following line to
+// avoid encoded attacks.
+// value = ESAPI.encoder().canonicalize(value);
+// Avoid null characters
+/** value = value.replaceAll("", ""); ***/
+// Avoid anything between script tags
+            Pattern scriptPattern = Pattern.compile(
+                    "<[\r\n| | ]*script[\r\n| | ]*>(.*?)<!--[\r\n| | ]*script[\r\n| | ]*-->", Pattern.CASE_INSENSITIVE);
+            value = scriptPattern.matcher(value).replaceAll("");
+// Avoid anything in a
+// src="http://www.yihaomen.com/article/java/..." type of
+// e-xpression
+            scriptPattern = Pattern.compile("src[\r\n| | ]*=[\r\n| | ]*[\\\"|\\\'](.*?)[\\\"|\\\']",
+                    Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            value = scriptPattern.matcher(value).replaceAll("");
+// Remove any lonesome tag
+            scriptPattern = Pattern.compile("<!--[\r\n| | ]*script[\r\n| | ]*-->", Pattern.CASE_INSENSITIVE);
+            value = scriptPattern.matcher(value).replaceAll("");
+// Remove any lonesome <script ...> tag
+            scriptPattern = Pattern.compile("<[\r\n| | ]*script(.*?)>",
+                    Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            value = scriptPattern.matcher(value).replaceAll("");
+// Avoid eval(...) expressions
+            scriptPattern = Pattern.compile("eval\\((.*?)\\)",
+                    Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            value = scriptPattern.matcher(value).replaceAll("");
+// Avoid e-xpression(...) expressions
+            scriptPattern = Pattern.compile("e-xpression\\((.*?)\\)",
+                    Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            value = scriptPattern.matcher(value).replaceAll("");
+// Avoid javascript:... expressions
+            scriptPattern = Pattern.compile("javascript[\r\n| | ]*:[\r\n| | ]*", Pattern.CASE_INSENSITIVE);
+            value = scriptPattern.matcher(value).replaceAll("");
+// Avoid vbscript:... expressions
+            scriptPattern = Pattern.compile("vbscript[\r\n| | ]*:[\r\n| | ]*", Pattern.CASE_INSENSITIVE);
+            value = scriptPattern.matcher(value).replaceAll("");
+// Avoid onload= expressions
+            scriptPattern = Pattern.compile("onload(.*?)=",
+                    Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            value = scriptPattern.matcher(value).replaceAll("");
+        }
+        return value;
+    }
+
+    public boolean checkXSSAndSql(String value) {
+        boolean flag = false;
+        if (value != null) {
+// NOTE: It's highly recommended to use the ESAPI library and
+// uncomment the following line to
+// avoid encoded attacks.
+// value = ESAPI.encoder().canonicalize(value);
+// Avoid null characters
+/** value = value.replaceAll("", ""); ***/
+// Avoid anything between script tags
+            Pattern scriptPattern = Pattern.compile(
+                    "<[\r\n| | ]*script[\r\n| | ]*>(.*?)</[\r\n| | ]*script[\r\n| | ]*>", Pattern.CASE_INSENSITIVE);
+            flag = scriptPattern.matcher(value).find();
+            if (flag) {
+                return flag;
+            }
+// Avoid anything in a
+// src="http://www.yihaomen.com/article/java/..." type of
+// e-xpression
+            scriptPattern = Pattern.compile("src[\r\n| | ]*=[\r\n| | ]*[\\\"|\\\'](.*?)[\\\"|\\\']",
+                    Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            flag = scriptPattern.matcher(value).find();
+            if (flag) {
+                return flag;
+            }
+// Remove any lonesome </script> tag
+            scriptPattern = Pattern.compile("<!--[\r\n| | ]*script[\r\n| | ]*-->", Pattern.CASE_INSENSITIVE);
+            flag = scriptPattern.matcher(value).find();
+            if (flag) {
+                return flag;
+            }
+// Remove any lonesome <script ...> tag
+            scriptPattern = Pattern.compile("<[\r\n| | ]*script(.*?)>",
+                    Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            flag = scriptPattern.matcher(value).find();
+            if (flag) {
+                return flag;
+            }
+// Avoid eval(...) expressions
+            scriptPattern = Pattern.compile("eval\\((.*?)\\)",
+                    Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            flag = scriptPattern.matcher(value).find();
+            if (flag) {
+                return flag;
+            }
+// Avoid e-xpression(...) expressions
+            scriptPattern = Pattern.compile("e-xpression\\((.*?)\\)",
+                    Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            flag = scriptPattern.matcher(value).find();
+            if (flag) {
+                return flag;
+            }
+// Avoid javascript:... expressions
+            scriptPattern = Pattern.compile("javascript[\r\n| | ]*:[\r\n| | ]*", Pattern.CASE_INSENSITIVE);
+            flag = scriptPattern.matcher(value).find();
+            if (flag) {
+                return flag;
+            }
+// Avoid vbscript:... expressions
+            scriptPattern = Pattern.compile("vbscript[\r\n| | ]*:[\r\n| | ]*", Pattern.CASE_INSENSITIVE);
+            flag = scriptPattern.matcher(value).find();
+            if (flag) {
+                return flag;
+            }
+// Avoid onload= expressions
+            scriptPattern = Pattern.compile("onload(.*?)=",
+                    Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            flag = scriptPattern.matcher(value).find();
+            if (flag) {
+                return flag;
+            }
+            flag = checkSqlKeyWords(value);
+        }
+        return flag;
+    }
+    public boolean checkSqlKeyWords(String value) {
+        for (String keyword : notAllowedKeyWords) {
+            if (value.length() > keyword.length() + 4
+                    && (value.contains(" " + keyword) || value.contains(keyword + " ") || value.contains(" " + keyword + " "))) {
+//                log.error(this.getRequestURI() + "，参数异常，包含sql的关键词(" + keyword + ")");
+                return true;
+            }
+        }
+        return false;
+    }
+    public final boolean checkParameter() {
+        Map<String, String[]> submitParams = new HashMap(super.getParameterMap());
+        Set<String> submitNames = submitParams.keySet();
+        for (String submitName : submitNames) {
+            Object submitValues = submitParams.get(submitName);
+            if ((submitValues != null)) {
+                for (String submitValue : (String[]) submitValues) {
+                    if (checkXSSAndSql(HtmlUtil.filter(submitValue))) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public String getBody() {
+        return this.body;
+    }
+
+    /*
+     * @author robin
+     * @description
+     * @date 2022/7/4 11:19
+     * @return java.io.BufferedReader
+     */
+    @Override
+    public BufferedReader getReader() throws IOException {
+        return new BufferedReader(new InputStreamReader(this.getInputStream(), StandardCharsets.UTF_8));
+    }
+    @Override
+    public ServletInputStream getInputStream() throws IOException {
+        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
+        ServletInputStream servletInputStream = new ServletInputStream() {
+            @Override
+            public boolean isFinished() {
+                return false;
+            }
+            @Override
+            public boolean isReady() {
+                return false;
+            }
+            @Override
+            public void setReadListener(ReadListener readListener) {
+            }
+            @Override
+            public int read() throws IOException {
+                return byteArrayInputStream.read();
+            }
+        };
+        return servletInputStream;
+    }
+    /**
+     * 设置自定义post参数 //
+     *
+     * @param paramMaps
+     * @return
+     */
+    public void setParamsMaps(Map paramMaps) {
+        Map paramBodyMap = new HashMap<String,Object>();
+        if (!StringUtils.isEmpty(body)) {
+            paramBodyMap =JSONUtil.toBean(body, Map.class);
+        }
+        paramBodyMap.putAll(paramMaps);
+        body = JSONUtil.toJsonStr(paramBodyMap);
+    }
+}
+
+
+```
+
+- XssAndSqlFilter
+
+```java
+package com.example.bootmaven.config.filter;
+
+
+import cn.hutool.json.JSONUtil;
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
+import cn.hutool.log.StaticLog;
+import cn.hutool.log.level.Level;
+import com.example.bootmaven.config.GlobalValue;
+import com.example.bootmaven.response.R;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
+/**
+ * @author robin
+ * @date 2022年07月04日 12:25
+ * @description
+ */
+
+@WebFilter(urlPatterns = "/*", filterName = "xssAndSqlFilter", dispatcherTypes = DispatcherType.REQUEST)
+@Component
+public class XssAndSqlFilter implements Filter {
+    //推荐创建不可变静态类成员变量
+    private static final Log log = LogFactory.get();
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        log.log(Level.INFO, "init");
+    }
+
+    //    1. GET 传递, 参数可以直接通过request.getParameter获取。
+//    2. Post 传递,产生不能过直接从request.getInputStream() 读取，必须要进行重新写。（request.getInputStream()只能够读取一次）
+//    方式：通过重写 HttpServletRequestWrapper 类 获取getInputStream中的流数据，然后在将body数据进行重新写入传递下去。
+    /*
+     * @author robin
+     * @description
+     *
+     * @date 2022/7/6 14:04
+     * @param request
+     * @param response
+     * @param chain
+     */
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        ServletOutputStream outputStream = response.getOutputStream();
+        String method = "GET";//设置初始值
+        XssAndSqlHttpServletRequestWrapper xssRequest = null;
+        if (request instanceof HttpServletRequest) {//判断左边的对象是否是它右边对象的实例
+            method = ((HttpServletRequest) request).getMethod();//得到请求URL地址时使用的方法
+            // 防止流读取一次后就没有了, 所以需要将流继续写出去
+            xssRequest = new XssAndSqlHttpServletRequestWrapper((HttpServletRequest) request);//创建对象
+        }
+        TreeMap paramsMaps = new TreeMap();
+
+        if ("POST".equalsIgnoreCase(method)) {//判断是否为post
+
+            String body = xssRequest.getBody();
+            paramsMaps = JSONUtil.toBean(body, TreeMap.class);
+            if (StringUtils.isNotBlank(body) && (xssRequest.checkXSSAndSql(body) || xssRequest.checkParameter())) {//等价于 str != null && str.length > 0 && str.trim().length > 0
+                throwError(outputStream, body);
+            } else {
+                xssRequest.setParamsMaps(paramsMaps);
+                chain.doFilter(xssRequest, response);
+            }
+
+        } else if (method.equals("GET")) {
+            assert xssRequest != null;
+            if (xssRequest.checkParameter())
+                throwError(outputStream, "");
+            else
+                chain.doFilter(xssRequest, response);
+//            assert xssRequest != null;
+//            Map<String, String[]> parameterMap = xssRequest.getParameterMap();
+//            Set<Map.Entry<String, String[]>> entries = parameterMap.entrySet();
+//            Iterator<Map.Entry<String, String[]>> iterator = entries.iterator();
+//            while (iterator.hasNext()) {
+//                Map.Entry<String, String[]> next = iterator.next();
+//                paramsMaps.put(next.getKey(), next.getValue()[0]);
+//            }
+        } else {
+            chain.doFilter(xssRequest, response);
+        }
+    }
+
+
+    public static void throwError(ServletOutputStream outputStream, String param) throws IOException {
+        StaticLog.info("您所访问的页面请求中有违反安全规则元素存在，拒绝访问!.[]==" + param, "ERROR");
+        outputStream.write("您所访问的页面请求中有违反安全规则元素存在，拒绝访问!.".getBytes());
+        outputStream.flush();
+    }
+
+    // 获取request请求body中参数
+    public static String getBodyString(BufferedReader br) {
+        String inputLine;
+        StringBuilder str = new StringBuilder();
+        try {
+            while ((inputLine = br.readLine()) != null) {
+                str.append(inputLine);
+            }
+            br.close();
+        } catch (IOException e) {
+            System.out.println("IOException: " + e);
+        }
+        return str.toString();
+    }
+
+
+    @Override
+    public void destroy() {
+
+    }
+}
+
+```
+
+注意：
+
+- 原先网上参考，有异常参数是用的 return;但是有个问题，login.do 这个本应该不被拦截的 action，发现最后走了拦截器。改为 outputStream.flush();后没这个问题。
+- 发现但凡调用 request.getInputStream()，它后续都会报错/error，然后跑到拦截器了。后来参考了[https://blog.csdn.net/fuwenshen/article/details/90203395]
+
+```
+Post 传递的产生不能过直接从request.getInputStream() 读取，必须要进行重新写。（request.getInputStream()只能够读取一次）
+
+方式： 通过重写 HttpServletRequestWrapper 类 获取getInputStream中的流数据，然后在将body数据进行重新写入传递下去。
+```
+
+所以在 POST 的时候，通过 xssRequest.setParamsMaps(paramsMaps);重新把参数传入。最后调用 chain.doFilter(xssRequest, response);
