@@ -26,6 +26,7 @@ _假定我们已经安装了 java1.8，并且设置了环境变量。_
 ![jsva环境变量](/images/flutter/5.png)
 
 然后我们设置安卓的环境变量：
+
 ![安卓环境变量](/images/flutter/6-1.png)
 ![安卓环境变量](/images/flutter/7.png)
 

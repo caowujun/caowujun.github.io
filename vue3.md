@@ -89,7 +89,7 @@ TSLint (deprecated) // TypeScript 格式验证工具
 - element-plus 必须第一个装，最后装的时候，会把之前的 axios ，i18 统统给删掉，不知道为什么
 - cnpm install 会安装大量垃圾文件夹，3G 多
 
-最终执行，结论就是少用 npm
+最终执行，结论就是少用 cnpm
 
 ```bash
 npm install element-plus --save

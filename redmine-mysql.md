@@ -77,6 +77,7 @@ yum repolist enabled | grep "mysql.*-community.*"
 ```
 
 结果如图：
+
 ![mysql验证](/images/redmine/1.png)
 
 ### 2.6 执行安装
@@ -161,7 +162,7 @@ mysql -uroot -p
 ### 2.14.2 添加远程访问密码
 
 ```bash
-GRANT ALL ON *.* TO root@'%' IDENTIFIED BY 'Win2003@' WITH GRANT OPTION;
+GRANT ALL ON *.* TO root@'%' IDENTIFIED BY 'newpwd' WITH GRANT OPTION;
 ```
 
 ### 2.14.3 刷新修改
@@ -289,7 +290,7 @@ docker run --name=redmine -it \
   --env='SMTP_DOMAIN=www.163.com'  \
   --env='SMTP_HOST=smtp.163.com'  \
   --env='SMTP_PORT=25' \
-  --env='SMTP_USER=redminesmtp@163.com' \
+  --env='SMTP_USER=我的@163.com' \
   --env='SMTP_PASS=key1'  \
   --volume=/srv/docker/redmine/redmine:/home/redmine/data \
   --volume=/srv/docker/redmine/redmine-logs:/var/log/redmine/ \
