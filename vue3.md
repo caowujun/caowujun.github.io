@@ -108,3 +108,13 @@ npm init vite@latest vuevite --template vue
 [文档1](https://blog.csdn.net/weixin_43891485/article/details/117635376)
 [文档2](https://www.cnblogs.com/wisewrong/p/13717287.html)
 ```
+
+## 4. toResfs 与 toRef
+
+参考[https://www.cnblogs.com/wjw1014/p/16444682.html]
+
+- ref:本质其实是去拷贝一份数据，脱离了与源数据的交互。什么意思呢？就是 ref 函数可以将对象里面的属性值变成响应式的数据，修改响应式数据，是不会影响到源数据，但是视图层上的数据会被更新。<font color=red>不修改元数据，修改视图</font>
+
+- toRefs: 本质是引用，也就是说，toRef 函数会与源数据交互，修改响应式数据会造成源数据的修改，但是他的修改不会造成视图层数据的更新。<font color=red>修改元数据，不修改视图</font>
+
+-toRefs:与 toRef 相似，
