@@ -1839,3 +1839,110 @@ Post 传递的产生不能过直接从request.getInputStream() 读取，必须�
 ```
 
 所以在 POST 的时候，通过 xssRequest.setParamsMaps(paramsMaps);重新把参数传入。最后调用 chain.doFilter(xssRequest, response);
+
+## 10. 注解验证
+
+| 注解            | 作用                                                        |
+| --------------- | ----------------------------------------------------------- | --- |
+| @NotNull        | 参数不能为 null                                             |
+| @NotBlank       | 参数值不不为 null，且去除首尾空格后长度不为 0，多于用字符串 |
+| @NotEmpty       | 参数不为 null 且不为空，字符串长度不为 0、集合大小不为 0    |
+| @Size(max,min)  | 参数字符长度必须在 min 到 max 之间                          |
+| @Pattern(value) | 参数必须符合指定的正则表达式                                |
+| @Null           | 参数只能为 null                                             |     |
+| @Email          | 参数值是邮箱格式，也可以通过@Pattern 自定义正则表达式来实现 |
+| @Past           | 参数必须是过去的日期                                        |
+| @Future         | 参数必须是未来的日期                                        |
+| @Max(value)     | 参数不能大于 value 的值                                     |
+| @Min(value)     | 参数不能小于 value 的值                                     |
+
+————————————————
+原文链接：https://blog.csdn.net/weixin_39025362/article/details/108387606
+
+## 11. 访问 application.properties
+
+前提：新建了 GlobalValue.class，希望能在这统一管理
+
+新增 application.properties 文件
+
+```properties
+globle.token.secret=robin_privatekey
+globle.token.expiretime=1000*60*2
+```
+
+### 11.1 第一个
+
+```java
+//application.properties可以不加下面这一行
+@PropertySource("classpath:application.properties")
+@Component
+@Data
+public class GlobalValue {
+
+    @Value("${globle.token.secret}")
+    private String TOKEN_SECRET;
+
+    @Value("${globle.token.expiretime}")
+    private String TOKEN_EXPIRETIME;
+}
+
+```
+
+在使用类
+
+```java
+@Resource
+private GlobalValue globalValue;
+```
+
+然后正常用,注意 properties 文件返回的都是默认 string 的。
+
+```java
+globalValue.getTOKEN_EXPIRETIME()
+```
+
+### 11.2 第 2 个
+
+注意这里有个变化，tokenexpiretime 我去掉了中间的“.”，发现
+“private String tokenexpiretime;”可以不加注解就取到值。
+但是
+“private String tokensecret;”就必须加注解才行
+
+```properties
+globle.token.secret=robin_privatekey
+globle.tokenexpiretime=1000*60*2
+```
+
+```java
+@Component
+@Data
+@ConfigurationProperties(prefix = "globle")
+public class GlobalValue {
+    @Value("${globle.token.secret}")
+    private String tokensecret;
+    private String tokenexpiretime;
+}
+```
+
+另外因为 secret 我们要的是 byte[]，所以重写了下
+
+```java
+//@PropertySource("classpath:application.properties")
+@Component
+@Data
+//@ConfigurationProperties(prefix = "globle")
+public class GlobalValue {
+
+    @Value("${globle.token.secret}")
+    private String tokenSecret;
+
+    @Value("${globle.token.expiretime}")
+    private String tokenExpiretime;
+
+
+    public byte[] getTokenSecret() {
+        return tokenSecret.getBytes();
+    }
+}
+
+```

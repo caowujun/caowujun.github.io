@@ -3,7 +3,7 @@
 _made by caowujun,2020.11.11_
 
 ---
-
+[toc]
 ## 1. 安装
 
 命令窗口执行
@@ -118,3 +118,7 @@ npm init vite@latest vuevite --template vue
 - toRefs: 本质是引用，也就是说，toRef 函数会与源数据交互，修改响应式数据会造成源数据的修改，但是他的修改不会造成视图层数据的更新。<font color=red>修改元数据，不修改视图</font>
 
 -toRefs:与 toRef 相似，
+
+
+## 5. volar
+参考[https://blog.csdn.net/qq_36157085/article/details/118404344](https://blog.csdn.net/qq_36157085/article/details/118404344)

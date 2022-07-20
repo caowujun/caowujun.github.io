@@ -75,3 +75,100 @@ firewall-cmd --zone=public --add-port=8121-8124/tcp --permanent
 ```bash
  firewall-cmd --zone=public --list-ports
 ```
+
+## 3. redis
+
+Centos8 于 2021 年年底停止了服务，大家再在使用 yum 源安装时候，出现下面错误“错误：Failed to download metadata for repo ‘AppStream’: Cannot prepare internal mirrorlist: No URLs in mirrorlist”
+参考：
+https://blog.csdn.net/qq_575775600/article/details/125274121
+https://baijiahao.baidu.com/s?id=1722728002073366376&wfr=spider&for=pc
+
+下载 redis
+
+```bash
+wget https://download.redis.io/releases/redis-6.2.6.tar.gz
+```
+
+解压 redis
+
+```bash
+tar xzf redis-6.2.6.tar.gz
+```
+
+移动 redis 目录，一般都会将 redis 目录放置到 /usr/local/redis 目录
+
+```bash
+mv redis-6.2.6 /usr/local/redis
+```
+
+进入 redis 安装目录，执行 make 命令编译 redis
+
+```bash
+cd /etc/yum.repos.d/
+```
+
+执行 make 命令
+
+```bash
+make
+```
+
+如果执行 make 报错：command not find
+
+```bash
+yum -y install gcc automake autoconf libtool make
+```
+
+如果执行上面命令报错：Failed to download metadata for repo 'AppStream': Cannot prepare internal mirrorlist
+
+```bash
+cd /etc/yum.repos.d/
+
+sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+
+sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|
+```
+
+安装 redis，并指定安装目录
+
+```bash
+make install PREFIX=/usr/local/redis
+```
+
+启动 redis
+
+```baxh
+./bin/redis-server redis.conf
+```
+
+判断是否开启
+
+```bash
+ps -ef | grep redis
+```
+
+通过 redis-cli 测试 redis 是否可用，在 redis 安装目录执行下面命令
+
+```bash
+./bin/redis-cli
+```
+
+我们通过下面命令随便 set 一个字符串类型的值，key 是 test，value 是 hello
+
+```bash
+set test hello
+```
+
+通过下面命令 get 出 test 这个 key 的 value 值
+
+```bash
+get test
+```
+
+关闭运行中的 Redis 服务,redis-cli 进入控制台后输入命令 shutdown
+
+```bash
+./bin/redis-cli
+
+shundown
+```
