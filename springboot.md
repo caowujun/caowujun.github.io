@@ -1170,6 +1170,8 @@ public class SpringMvcSupport implements WebMvcConfigurer {
 
 ```
 
+访问地址：http://localhost:5015/boot/doc.html#/home
+
 ## 6. 登录 token，jwt，hutool 工具。
 
 原来是自己写 jwt 工具，后来发现 hutool 已经继承了，直接上代码
