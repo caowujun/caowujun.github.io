@@ -2,6 +2,8 @@
 
 _made by caowujun,2022.1.19_
 
+
+现在都是用token，不使用ssh了，后面ssh相关不用看了
 ---
 
 官方文档：https://docs.github.com/cn/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
