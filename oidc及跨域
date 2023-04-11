@@ -1,0 +1,98 @@
+##
+
+### 先说跨域
+客户端网站-oidc-302到oidc的login-点登录-oidc的login api-320到redirect_url
+在这里，oidc的后端被其他服务器访问，然后oidc做了2次302
+302是这样做的
+    response.setStatus(HttpStatus.HTTP_MOVED_TEMP);
+            response.setHeader("PATH", propertyService.oidc_errorPath.replace("{error}", ((OidcCodeException) ex).getCode().name())
+                    .replace("{error_description}", java.net.URLEncoder.encode(((OidcCodeException) ex).getErrorMsg(), "utf-8"))
+                    + "&state=" + requestAuthCode.getState());
+
+然后前端
+
+// 响应拦截器
+request.interceptors.response.use(
+  function (response: AxiosResponse<any>) {
+    console.log('response', response)
+    const status = response.data.status
+    if (!status || status === 200) {
+      // 正常情况
+      return response
+    }
+    // 其他情况
+    showToast(response.data.msg || response.data.msg || '')
+    // 手动返回一个 Promise 异常
+    return Promise.reject(response.data)
+  },
+  function (error) {
+    debugger
+    if (error.response?.status === 302) {
+      debugger
+      console.log('cvlue.error.response.headers.path', error.response.headers.path)
+      location.href = error.response.headers.path //取出路径，重定向
+    } else {
+      return Promise.reject(error.response)
+    }
+  }
+)
+但是发现取不到值（npm run dev 的时候除外，大概率这个时候都是localhost）
+ 
+原因分析
+主要问题就是跨域。因为前后端分离导致调取接口跨域，默认reponse header只能取到以下数据：
+
+Content-Language
+Content-Type
+Expires
+Last-Modified
+Pragma
+一共5个默认值。要想取得其他的字段需要在服务器端设置Access-Control-Expose-Headers 配置前端想要获取的header数据
+————————————————
+版权声明：本文为CSDN博主「清风细雨_林木木」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/weixin_35773751/article/details/127876425
+
+
+后端增加一个class
+package com.pactera.miniappoidcproviderapi.config;
+
+import org.springframework.stereotype.Component;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * @Classname SimpleCORSFilter
+ * @Description TODO
+ * @Date 2023/03/09 18:20
+ * @Author wujun.cao
+ */
+@Component
+public class SimpleCORSFilter implements Filter {
+
+    @Override
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest reqs = (HttpServletRequest) req;
+        String curOrigin = reqs.getHeader("Origin");
+        HttpServletResponse response = (HttpServletResponse) res;
+        response.setHeader("Access-Control-Allow-Origin", curOrigin == null ? "true" : curOrigin);
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, HEAD");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Expose-Headers", "PATH");
+        response.setHeader("Access-Control-Allow-Headers", "access-control-allow-origin, authority, content-type, version-info, X-Requested-With PATH");
+        response.setContentType("application/json;charset=UTF-8");
+        chain.doFilter(req, res);
+
+    }
+
+    @Override
+    public void init(FilterConfig filterConfig) {
+    }
+
+    @Override
+    public void destroy() {
+    }
+
+}

@@ -1876,9 +1876,10 @@ globle.token.expiretime=1000*60*2
 
 ```java
 //application.properties可以不加下面这一行
-@PropertySource("classpath:application.properties")
-@Component
-@Data
+// @PropertySource("classpath:application.properties")
+// @Component
+// @Data
+@Service
 public class GlobalValue {
 
     @Value("${globle.token.secret}")
