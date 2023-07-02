@@ -290,8 +290,8 @@ docker run --name=redmine -it \
   --env='SMTP_DOMAIN=www.163.com'  \
   --env='SMTP_HOST=smtp.163.com'  \
   --env='SMTP_PORT=25' \
-  --env='SMTP_USER=我的@163.com' \
-  --env='SMTP_PASS=key1'  \
+  --env='SMTP_USER=redminesmtp@163.com' \
+  --env='SMTP_PASS=NZHOSHWRKWQZTXMG'  \
   --volume=/srv/docker/redmine/redmine:/home/redmine/data \
   --volume=/srv/docker/redmine/redmine-logs:/var/log/redmine/ \
   sameersbn/redmine
