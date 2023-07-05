@@ -1,5 +1,15 @@
 
 yum  update
+
+yum是一种在Red Hat、CentOS和Fedora等Linux发行版中常用的包管理器，yum update是yum命令的一个选项，用于更新系统中的所有已安装的软件包到最新版本。
+
+当执行yum update命令时，yum会先检查可用的软件包，确定哪些软件包需要更新，并将它们的最新版本下载到系统中。这个过程中，yum会自动检查所有软件包的依赖关系，并在必要时同时更新依赖关系。更新完成后，yum还会重新配置系统中的软件包，以确保它们都能够正常工作。
+————————————————
+版权声明：本文为CSDN博主「快点好好学习吧」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/qq_36777143/article/details/130745750
+
+
+
 更换源
 https://developer.aliyun.com/mirror/centos?spm=a2c6h.13651102.0.0.3e221b114JXWIf
 
