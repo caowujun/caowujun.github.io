@@ -3,7 +3,10 @@ yum  update
 更换源
 https://developer.aliyun.com/mirror/centos?spm=a2c6h.13651102.0.0.3e221b114JXWIf
 
- 
+mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-vault-8.5.2111.repo
+yum clean all && yum makecache
+
 ###  安装其他 
 
 
