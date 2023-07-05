@@ -1,6 +1,46 @@
-## 配置Apache服务
 
-### 1、运行以下命令，安装Apache服务。
+yum  update
+更换源
+https://developer.aliyun.com/mirror/centos?spm=a2c6h.13651102.0.0.3e221b114JXWIf
+
+ 
+###  安装其他 
+
+
+yum install java-17-openjdk
+ 
+
+yum的maven，nodejs，版本都好低
+
+
+发现node版本过低
+# 查看当前版本
+node -v
+# 清理本地包缓存
+npm cache clean -f
+# 安装
+npm i -g n
+# 查看n是否安装成功
+n -V
+
+
+n lts // 长期支持版
+
+
+node -v
+如果还是旧的，关掉shell，打开新的就好了
+
+npm install -g pnpm
+
+
+  
+
+
+
+## 配置Apache服务 
+
+### 1、运行以下命令，安装Apache服务。 
+
 参照：https://help.aliyun.com/document_detail/253434.html?spm=a2c4g.223746.0.0.3154637fD0lg1C
 ```bash
  yum install -y httpd
@@ -25,9 +65,6 @@
 ```
 
 ## 安装docker
-
-参照：https://docs.docker.com/engine/install/centos/
-
 ### 1、安装
 Install the yum-utils package (which provides the yum-config-manager utility) and set up the repository.
 
@@ -48,7 +85,7 @@ failovermethod=priority
 
 :wq!   强制保存即可
 
-
+参照：https://docs.docker.com/engine/install/centos/
 
 Install Docker Engine, containerd, and Docker Compose
 
@@ -240,11 +277,12 @@ initdb: error: program "postgres" is needed by initdb but was not found in the s
 
  docker run --name=sameersbn_postgresql -e TZ="Asia/Shanghai" -id --publish=5433:5432   --env='POSTGRES_USER=redmine' --env='POSTGRES_PASSWORD=Win2003@' --restart=always --volume=/apps/redmine/postgresql:/var/lib/postgresql sameersbn/postgresql
 
- docker run --name=sameersbn_redmine -e TZ="Asia/Shanghai" -id --link=sameersbn_postgresql:postgresql --publish=9217:80 --env='REDMINE_PORT=9217'     --env='SMTP_DOMAIN=www.163.com'    --env='SMTP_HOST=smtp.163.com'   --env='SMTP_PORT=25'  --env='SMTP_USER=redminesmtp@163.com'   --env='SMTP_PASS=NZHOSHWRKWQZTXMG'  --restart=always --volume=/apps/redmine/redmine:/home/redmine/data --volume=/apps/redmine/redmine-logs:/var/log/redmine  sameersbn/redmine
+ docker run --name=sameersbn_redmine -e TZ="Asia/Shanghai" -id --link=sameersbn_postgresql:postgresql --publish=3000:80 --env='REDMINE_PORT=3000'     --env='SMTP_DOMAIN=www.163.com'    --env='SMTP_HOST=smtp.163.com'   --env='SMTP_PORT=25'  --env='SMTP_USER=redminesmtp@163.com'   --env='SMTP_PASS=NZHOSHWRKWQZTXMG'  --restart=always --volume=/apps/redmine/redmine:/home/redmine/data --volume=/apps/redmine/redmine-logs:/var/log/redmine  sameersbn/redmine
  ```
 ————————————————
 版权声明：本文为CSDN博主「武晓兵」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
 原文链接：https://blog.csdn.net/wuxiaobingandbob/article/details/113482198
 
  
- 
+代理redmine转发
+
