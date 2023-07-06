@@ -282,6 +282,7 @@ mkdir -p /apps/redmine/redmine-logs
     docker run -id --name=postgresql-redmine  --restart=always   --publish=5433:5432  --env='DB_NAME=redmine_production'   --env='DB_USER=redmine' --env='DB_PASS=Win2004@'   --volume=/apps/redmine/postgresql:/var/lib/postgresql   sameersbn/postgresql
 会报各种错误，比如
 PG::InsufficientPrivilege: ERROR: permission denied for schema public
+或者
 initdb: error: program "postgres" is needed by initdb but was not found in the same directory as "/usr/lib/postgresql/15/bin/initdb"
  
  最后还是下面解决
